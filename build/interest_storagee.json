@@ -1,0 +1,186 @@
+{
+  "contractName": "interest_storagee",
+  "abi": [
+    {
+      "stateMutability": "payable",
+      "type": "fallback"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.2+commit.661d1103\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"stateMutability\":\"payable\",\"type\":\"fallback\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/C/Users/artii/Conflux Studio/minpos/contracts/eSpace/interest_storage.sol\":\"interest_storagee\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/C/Users/artii/Conflux Studio/minpos/contracts/eSpace/interest_storage.sol\":{\"keccak256\":\"0xee0102483cd024063e11fced1797f25d5d182e1af6e4601d1b79efc0917bc74b\",\"license\":\"Unlicense\",\"urls\":[\"bzz-raw://73f5bb939bdcdd87520963279f5d4e70a420abf7dc86328fa157c9a445a0c9e1\",\"dweb:/ipfs/Qmd2ACXmNXpYEq7b1VS3pr1gHGXhoekTzeimpTzpigrwef\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603c80601d6000396000f3fe608060405200fea26469706673582212201ad0ec5b146b2d0e0aa6ace189c89f2b57b0f874b151565df51f4419772f72b464736f6c63430008020033",
+  "deployedBytecode": "0x608060405200fea26469706673582212201ad0ec5b146b2d0e0aa6ace189c89f2b57b0f874b151565df51f4419772f72b464736f6c63430008020033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "65:67:14:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "65:67:14:-:0;;;",
+  "source": "//SPDX-License-Identifier: Unlicense\r\npragma solidity ^0.8.0;\r\n\r\ncontract interest_storagee {\r\n\r\nfallback() external payable {}\r\n\r\n}",
+  "sourcePath": "C:/Users/artii/Conflux Studio/minpos/contracts/eSpace/interest_storage.sol",
+  "ast": {
+    "absolutePath": "/C/Users/artii/Conflux Studio/minpos/contracts/eSpace/interest_storage.sol",
+    "exportedSymbols": {
+      "interest_storagee": [
+        5293
+      ]
+    },
+    "id": 5294,
+    "license": "Unlicense",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 5288,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "38:23:14"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 5293,
+        "linearizedBaseContracts": [
+          5293
+        ],
+        "name": "interest_storagee",
+        "nameLocation": "74:17:14",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 5291,
+              "nodeType": "Block",
+              "src": "125:2:14",
+              "statements": []
+            },
+            "id": 5292,
+            "implemented": true,
+            "kind": "fallback",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5289,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "105:2:14"
+            },
+            "returnParameters": {
+              "id": 5290,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "125:0:14"
+            },
+            "scope": 5293,
+            "src": "97:30:14",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 5294,
+        "src": "65:67:14"
+      }
+    ],
+    "src": "38:94:14"
+  },
+  "legacyAST": {
+    "absolutePath": "/C/Users/artii/Conflux Studio/minpos/contracts/eSpace/interest_storage.sol",
+    "exportedSymbols": {
+      "interest_storagee": [
+        5293
+      ]
+    },
+    "id": 5294,
+    "license": "Unlicense",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 5288,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "38:23:14"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 5293,
+        "linearizedBaseContracts": [
+          5293
+        ],
+        "name": "interest_storagee",
+        "nameLocation": "74:17:14",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 5291,
+              "nodeType": "Block",
+              "src": "125:2:14",
+              "statements": []
+            },
+            "id": 5292,
+            "implemented": true,
+            "kind": "fallback",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5289,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "105:2:14"
+            },
+            "returnParameters": {
+              "id": 5290,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "125:0:14"
+            },
+            "scope": 5293,
+            "src": "97:30:14",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 5294,
+        "src": "65:67:14"
+      }
+    ],
+    "src": "38:94:14"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.2+commit.661d1103.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.3.4",
+  "updatedAt": "2022-08-12T16:00:07.299Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

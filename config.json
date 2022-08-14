@@ -1,0 +1,17 @@
+{
+  "main": "./contracts/GameItems.sol",
+  "deploy": "./build/contracts/GameItems.json",
+  "framework": "cfxtruffle",
+  "npmClient": "npm",
+  "compilers": {
+    "solc": "0.8.2",
+    "cfxtruffle": "",
+    "evmVersion": "istanbul"
+  },
+  "linter": "solhint",
+  "editor": {
+    "fontFamily": "Hack",
+    "fontSize": "13px",
+    "ligatures": false
+  }
+}
