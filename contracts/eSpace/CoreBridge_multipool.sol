@@ -28,7 +28,7 @@ contract CoreBridge_multipool is Ownable {
   address   public CoreExroomAddress;         //Exchange room Address in core
   address   public ServicetreasuryAddress;    //Service treasury Address in core
   uint256   private system_cfxinterests_temp; //pools cfx interests in temporary
-  uint256   private identifier;               //Execution number
+  uint256   public identifier;               //Execution number , should be private when use in main net
   mapping(address=>bool) trusted_node_trigers;//     
   // ======================== Struct definitions =========================
   struct PoolSummary {
@@ -38,25 +38,11 @@ contract CoreBridge_multipool is Ownable {
     uint256 historical_Interest ;// total historical interest of whole pools
   }
 
-  // struct Pool_info {
-  //   uint256 availableVotes;  //
-  //   uint256 stakingVotes; // 
-  //   uint256 stakedVotes;  //
-  //   uint256 unstakingVotes; // 
-  //   uint256 unstakedVotes; 
-  // }
-
   constructor () {
     initialize();
   }
   // ======================== Modifiers =========================
 
-  // modifier Only_Multi_sign() {
-  //   for(uint i=0;i<Multi_sign_num;i++){
-  //     require(Multi_signs[i]==1, "Multi_sign is not ALL Signed!");
-  //   }
-  //   _;
-  // }
   modifier Only_in_order() {
     identifier += 1;
     _;
