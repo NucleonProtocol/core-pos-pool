@@ -20,14 +20,14 @@ interface IExchange {
     uint256 blockNumber;
   } 
 
-  struct UserSummary {
-    uint64 votes;  // Total votes in PoS system, including locking, locked, unlocking, unlocked
-    uint64 available; // locking + locked
-    uint64 locked;
-    uint64 unlocked;
-    uint256 claimedInterest;
-    uint256 currentInterest;
-  }
+  // struct UserSummary {
+  //   uint64 votes;  // Total votes in PoS system, including locking, locked, unlocking, unlocked
+  //   uint64 available; // locking + locked
+  //   uint64 locked;
+  //   uint64 unlocked;
+  //   uint256 claimedInterest;
+  //   uint256 currentInterest;
+  // }
 
   // admin functions
   function register(bytes32 indentifier, uint64 votePower, bytes calldata blsPubKey, bytes calldata vrfPubKey, bytes[2] calldata blsPubKeyProof) external payable;
@@ -52,7 +52,7 @@ interface IExchange {
   function temp_Interest() external view returns (uint256);
   function claimInterest(uint256 amount) external;
   function claimAllInterest() external returns (uint256);
-  function userSummary(address _user) external view returns (UserSummary memory);
+  //function userSummary(address _user) external view returns (UserSummary memory);
   function posAddress() external view returns (bytes32);
   function userInQueue(address account) external view returns (VotePowerQueue.QueueNode[] memory);
   function userOutQueue(address account) external view returns (VotePowerQueue.QueueNode[] memory);
