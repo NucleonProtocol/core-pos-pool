@@ -48,7 +48,7 @@ interface IExchange {
   // user functions
   function increaseStake(uint64 votePower) external payable;
   function decreaseStake(uint64 votePower) external;
-  function withdrawStake(uint64 votePower) external;
+  function withdrawStake() external;
   function temp_Interest() external view returns (uint256);
   function claimInterest(uint256 amount) external;
   function claimAllInterest() external returns (uint256);
