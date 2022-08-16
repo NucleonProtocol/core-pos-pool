@@ -28,7 +28,7 @@ contract CoreBridge_multipool is Ownable {
   address   public CoreExroomAddress;         //Exchange room Address in core
   address   public ServicetreasuryAddress;    //Service treasury Address in core
   uint256   private system_cfxinterests_temp; //pools cfx interests in temporary
-  uint256   public identifier;               //Execution number , should be private when use in main net
+  uint256   public identifier;                //Execution number , should be private when use in main net
   mapping(address=>bool) trusted_node_trigers;//     
   // ======================== Struct definitions =========================
   struct PoolSummary {
@@ -181,8 +181,8 @@ contract CoreBridge_multipool is Ownable {
     if (unstakeLen == 0) return;
     if (unstakeLen > 50) unstakeLen = 50; // max 50 unstakes per call
     IExchange posPool = IExchange(poolAddress[pos_id_in_use]);
-    IExchange.UserSummary memory userSummary = posPool.userSummary(address(this));
-    uint256 available = userSummary.locked;
+    IExchange.PoolSummary memory poolSummary = posPool.poolSummary();
+    uint256 available = poolSummary.totalvotes;
     bytes memory rawFirstUnstakeVotes ;
     uint256 firstUnstakeVotes;
     if (available == 0) return;
@@ -201,17 +201,18 @@ contract CoreBridge_multipool is Ownable {
     require(identifier==5,"identifier is not right, need be 5");
     uint256 pool_sum = poolAddress.length;
     IExchange posPool;
-    uint256 interest;
+    uint256 temp_unlocked;
     uint256 transferValue;
     for(uint256 i=0;i<pool_sum;i++)
     {
       posPool = IExchange(poolAddress[i]);
-      IExchange.UserSummary memory userSummary = posPool.userSummary(address(this));
-      if (userSummary.unlocked > 0) 
+      IExchange.PoolSummary memory poolSummary = posPool.poolSummary(address(this));
+      temp_unlocked = poolSummary.unlocked;
+      if (temp_unlocked > 0) 
       {
-        posPool.withdrawStake(userSummary.unlocked);
+        posPool.withdrawStake();
         // transfer to eSpacePool and call method
-        transferValue = userSummary.unlocked * 1000 ether;
+        transferValue = temp_unlocked * 1000 ether;
         crossSpaceCall.callEVM{value: transferValue}(ePoolAddrB20(), abi.encodeWithSignature("handleUnlockedIncrease(uint256)", userSummary.unlocked));
       }
     }

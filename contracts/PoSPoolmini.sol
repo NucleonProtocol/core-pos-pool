@@ -201,11 +201,12 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     //require(temp_out_cEndVotes>0,"No new unlocked");
     _poolSummary.unlocking -= temp_out_cEndVotes;
     _poolSummary.unlocked += temp_out_cEndVotes;
-    require(_poolSummary.unlocked >= temp_out_cEndVotes, "Unlocked is not enough");
-    _stakingWithdraw(temp_out_cEndVotes * CFX_VALUE_OF_ONE_VOTE);
+    require(_poolSummary.unlocked >= 0, "Unlocked is not enough");
 
+    _stakingWithdraw(_poolSummary.unlocked * CFX_VALUE_OF_ONE_VOTE);
     address payable receiver = payable(bridge_withdraw);
-    receiver.transfer(temp_out_cEndVotes * CFX_VALUE_OF_ONE_VOTE);
+    receiver.transfer(_poolSummary.unlocked * CFX_VALUE_OF_ONE_VOTE);
+    _poolSummary.unlocked = 0;
     emit WithdrawStake(msg.sender, temp_out_cEndVotes);
   }
 
@@ -219,19 +220,19 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     receiver.transfer(claimableInterest);
     return claimableInterest;
   }
-  function test_transfer() public onlyRegisted onlybridge returns (uint256){
-    uint claimableInterest = address(this).balance;
-    //require(claimableInterest > 0, "No claimable interest");
-    address payable receiver = payable(msg.sender);
-    transferCFX( receiver,  claimableInterest);
-    //receiver.transfer(claimableInterest);
-    return claimableInterest;
-  }
+  // function test_transfer() public onlyRegisted onlybridge returns (uint256){
+  //   uint claimableInterest = address(this).balance;
+  //   //require(claimableInterest > 0, "No claimable interest");
+  //   address payable receiver = payable(msg.sender);
+  //   transferCFX( receiver,  claimableInterest);
+  //   //receiver.transfer(claimableInterest);
+  //   return claimableInterest;
+  // }
 
-  function transferCFX(address _address, uint256 _value) internal{
-        (bool res, ) = address(uint160(_address)).call{value:_value}("");
-        require(res,"TRANSFER ETH ERROR");
-  }
+  // function transferCFX(address _address, uint256 _value) internal{
+  //       (bool res, ) = address(uint160(_address)).call{value:_value}("");
+  //       require(res,"TRANSFER ETH ERROR");
+  // }
 
   function temp_Interest() public view onlyRegisted returns (uint256){
     return address(this).balance;
