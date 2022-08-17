@@ -313,4 +313,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   fallback() external payable {}
   receive() external payable {}
 
+  //---------------------------test methods,dele when used----------------
+  function register_test(bool _mode) public onlyOwner {_poolRegisted==_mode; }
+
 }
