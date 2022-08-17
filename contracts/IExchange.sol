@@ -50,6 +50,7 @@ interface IExchange {
   function decreaseStake(uint64 votePower) external;
   function withdrawStake() external;
   function temp_Interest() external view returns (uint256);
+  
   function claimInterest(uint256 amount) external;
   function claimAllInterest() external returns (uint256);
   //function userSummary(address _user) external view returns (UserSummary memory);
