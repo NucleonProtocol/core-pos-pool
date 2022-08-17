@@ -140,7 +140,7 @@ contract CoreBridge_multipool is Ownable {
     for(uint256 i=0;i<pool_sum;i++)
     {
       posPool = IExchange(poolAddress[i]);
-      //interest = posPool.userInterest(address(this));
+      interest = posPool.temp_Interest();
       if (interest > 0) {
         interest = posPool.claimAllInterest();
         system_cfxinterests_temp += interest.mul(poolUserShareRatio).div(RATIO_BASE);
@@ -224,4 +224,8 @@ contract CoreBridge_multipool is Ownable {
 
   fallback() external payable {}
   receive() external payable {}
+
+  //--------------------------------------temp-----------------------------------------------
+   function identifier_test(uint256 _identifier) public onlyOwner {identifier=_identifier; }
+  
 }
