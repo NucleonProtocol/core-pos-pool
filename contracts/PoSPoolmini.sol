@@ -107,8 +107,8 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     CFX_COUNT_OF_ONE_VOTE = 1000;
     CFX_VALUE_OF_ONE_VOTE = 1000 ether;
     ONE_DAY_BLOCK_COUNT = 2 * 3600 * 24;
-    _poolLockPeriod_in = ONE_DAY_BLOCK_COUNT * 7 + 3600;
-    _poolLockPeriod_out = ONE_DAY_BLOCK_COUNT * 7 + 3600;
+    _poolLockPeriod_in = ONE_DAY_BLOCK_COUNT * 13 + 3600;
+    _poolLockPeriod_out = ONE_DAY_BLOCK_COUNT * 1 + 3600;
   }
   
   ///
