@@ -99,7 +99,7 @@ contract CoreBridge_multipool is Ownable {
   }
   
   function ePoolAddrB20() public view returns (bytes20) {
-    return bytes20(eSpaceExroomAddress);
+    return bytes20(this);
   }
   //-----------------espace method-------------------------------------------------------------------------------------
 
@@ -131,7 +131,7 @@ contract CoreBridge_multipool is Ownable {
     withdrawVotes();
   }
 
-  function claimInterests() public Only_in_order Only_trusted_trigers {
+  function claimInterests() public Only_in_order Only_trusted_trigers returns({
     require(identifier==1,"identifier is not right, need be 1");
     require(system_cfxinterests_temp==0,'system_cfxinterests not cleaned');
     uint256 pool_sum = poolAddress.length;
@@ -154,7 +154,7 @@ contract CoreBridge_multipool is Ownable {
     uint256 toxCFX = system_cfxinterests_temp;
     system_cfxinterests_temp == 0;
     crossSpaceCall.callEVM{value: toxCFX}(ePoolAddrB20(), abi.encodeWithSignature("CFX_exchange_XCFX()"));
-    uint256 balanceinpool = crossSpaceCall.mappedBalance(eSpaceExroomAddress);
+    uint256 balanceinpool = crossSpaceCall.mappedBalance(ePoolAddrB20());
     uint64 votePower = uint64(balanceinpool.div(CFX_VALUE_OF_ONE_VOTE));
     if (votePower > 0){
       IExchange(poolAddress[pos_id_in_use]).increaseStake(votePower);
@@ -164,7 +164,7 @@ contract CoreBridge_multipool is Ownable {
   function SyncValue() public Only_in_order Only_trusted_trigers {
     require(identifier==3,"identifier is not right, need be 3");
     uint256 sum = IERC20(xCFXAddress).totalSupply() ; 
-    uint256 balanceinpool = crossSpaceCall.mappedBalance(eSpaceExroomAddress);
+    uint256 balanceinpool = crossSpaceCall.mappedBalance(ePoolAddrB20());
     uint256 pool_sum = poolAddress.length;
     uint256 SUMvotes;
     for(uint256 i=0;i<pool_sum;i++)
