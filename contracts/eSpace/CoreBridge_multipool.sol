@@ -87,12 +87,12 @@ contract CoreBridge_multipool is Ownable {
   function seteSpaceExroomAddress(address _eSpaceExroomAddress) public onlyOwner {
     eSpaceExroomAddress = _eSpaceExroomAddress;
   }
-  function settrusted_trigers(address _eSpaceExroomAddress,bool state) public onlyOwner {
-    trusted_node_trigers[_eSpaceExroomAddress] = state;
+  function settrusted_trigers(address _Address,bool state) public onlyOwner {
+    trusted_node_trigers[_Address] = state;
   }
 
-  function get_triger_state(address _eSpaceExroomAddress) public view onlyOwner returns(bool){
-    return trusted_node_trigers[_eSpaceExroomAddress];
+  function get_triger_state(address _Address) public view onlyOwner returns(bool){
+    return trusted_node_trigers[_Address];
   }
   function getPoolAddress() public view returns (address[] memory ) {
     return poolAddress;
