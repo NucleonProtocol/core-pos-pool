@@ -23,11 +23,15 @@ contract CoreBridge_multipool is Ownable {
 
   address[] public poolAddress;               // can use many pools, so here is an array
   uint256   public pos_id_in_use;             // pos pool in use
+  //eSpace address
   address   public xCFXAddress;               // xCFX addr in espace 
-  bytes20   public eSpaceExroomAddress;       //Exchange room Address in espace
+  address   public eSpaceExroomAddress;       //Exchange room Address in espace
+  address   public bridge_eSpaceAddres;       //address of bridge in espace
+  //Core Space address
   address   public CoreExroomAddress;         //Exchange room Address in core
   address   public ServicetreasuryAddress;    //Service treasury Address in core
   uint256   public system_cfxinterests_temp; //pools cfx interests in temporary
+  //
   uint256   public identifier;                //Execution number , should be private when use in main net
   mapping(address=>bool) trusted_node_trigers;//     
   // ======================== Struct definitions =========================
@@ -98,9 +102,9 @@ contract CoreBridge_multipool is Ownable {
     return poolAddress;
   }
   
-  function ePoolAddrB20() public view returns (bytes20) {
-    return bytes20(address(this));
-  }
+  // function ePoolAddrB20() public view returns (bytes20) {
+  //   return bytes20(address(this));
+  // }
   //-----------------espace method-------------------------------------------------------------------------------------
 
   function queryespacexCFXincrease() public returns (uint256) {
@@ -155,7 +159,7 @@ contract CoreBridge_multipool is Ownable {
     uint256 toxCFX = system_cfxinterests_temp;
     system_cfxinterests_temp == 0;
     crossSpaceCall.callEVM{value: toxCFX}(eSpaceExroomAddress, abi.encodeWithSignature("CFX_exchange_XCFX()"));
-    bytes memory rawbalance = crossSpaceCall.callEVM(ePoolAddrB20(), abi.encodeWithSignature("espacebalanceof(bytes20)", ePoolAddrB20()));
+    bytes memory rawbalance = crossSpaceCall.callEVM(ePoolAddrB20(), abi.encodeWithSignature("espacebalanceof(address)", address(ePoolAddrB20())));
     uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
     uint64 votePower = uint64(balanceinpool.div(CFX_VALUE_OF_ONE_VOTE));
     if (votePower > 0){
@@ -166,7 +170,7 @@ contract CoreBridge_multipool is Ownable {
   function SyncValue() public Only_in_order Only_trusted_trigers {
     require(identifier==3,"identifier is not right, need be 3");
     uint256 sum = IERC20(xCFXAddress).totalSupply() ; 
-    bytes memory rawbalance = crossSpaceCall.callEVM(ePoolAddrB20(), abi.encodeWithSignature("espacebalanceof(bytes20)", ePoolAddrB20()));
+    bytes memory rawbalance = crossSpaceCall.callEVM(ePoolAddrB20(), abi.encodeWithSignature("espacebalanceof(address)", ePoolAddrB20()));
     uint256 balanceinpool =  abi.decode(rawbalance, (uint256));    uint256 pool_sum = poolAddress.length;
     uint256 SUMvotes;
     for(uint256 i=0;i<pool_sum;i++)
