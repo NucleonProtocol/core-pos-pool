@@ -149,7 +149,7 @@ contract CoreBridge_multipool is Ownable {
       if (interest > 0) {
         interest = posPool.claimAllInterest(); 
         system_cfxinterests_temp += interest;
-        crossSpaceCall.transferEVM{value: interest}(bridge_eSpaceAddress);
+        crossSpaceCall.transferEVM{value: interest}(bytes20(bridge_eSpaceAddress));
       }
     }
     return system_cfxinterests_temp;
@@ -164,7 +164,7 @@ contract CoreBridge_multipool is Ownable {
     uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
     uint64 votePower = uint64(balanceinpool.div(CFX_VALUE_OF_ONE_VOTE));
     if (votePower > 0){
-      crossSpaceCall.withdrawFromMapped(votePower.mul(CFX_VALUE_OF_ONE_VOTE));
+      crossSpaceCall.withdrawFromMapped(votePower*CFX_VALUE_OF_ONE_VOTE);
       IExchange(poolAddress[pos_id_in_use]).increaseStake(votePower);
     }
   }
