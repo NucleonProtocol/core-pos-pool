@@ -26,7 +26,7 @@ contract CoreBridge_multipool is Ownable {
   //eSpace address
   address   public xCFXAddress;               // xCFX addr in espace 
   address   public eSpaceExroomAddress;       //Exchange room Address in espace
-  address   public bridge_eSpaceAddres;       //address of bridge in espace
+  address   public bridge_eSpaceAddress;       //address of bridge in espace
   //Core Space address
   address   public CoreExroomAddress;         //Exchange room Address in core
   address   public ServicetreasuryAddress;    //Service treasury Address in core
@@ -88,7 +88,7 @@ contract CoreBridge_multipool is Ownable {
     }
   }
 
-  function seteSpaceExroomAddress(bytes20 _eSpaceExroomAddress) public onlyOwner {
+  function seteSpaceExroomAddress(address _eSpaceExroomAddress) public onlyOwner {
     eSpaceExroomAddress = _eSpaceExroomAddress;
   }
   function settrusted_trigers(address _Address,bool state) public onlyOwner {
@@ -141,14 +141,15 @@ contract CoreBridge_multipool is Ownable {
     uint256 pool_sum = poolAddress.length;
     IExchange posPool;
     uint256 interest;
+    
     for(uint256 i=0;i<pool_sum;i++)
     {
       posPool = IExchange(poolAddress[i]);
       interest = posPool.temp_Interest();
       if (interest > 0) {
-        interest = posPool.claimAllInterest();
+        interest = posPool.claimAllInterest(); 
         system_cfxinterests_temp += interest;
-        crossSpaceCall.transferEVM{value: interest}(ePoolAddrB20());
+        crossSpaceCall.transferEVM{value: interest}(bridge_eSpaceAddress);
       }
     }
     return system_cfxinterests_temp;
@@ -158,11 +159,12 @@ contract CoreBridge_multipool is Ownable {
     require(system_cfxinterests_temp!=0,'system_cfxinterests is cleaned');
     uint256 toxCFX = system_cfxinterests_temp;
     system_cfxinterests_temp == 0;
-    crossSpaceCall.callEVM{value: toxCFX}(eSpaceExroomAddress, abi.encodeWithSignature("CFX_exchange_XCFX()"));
-    bytes memory rawbalance = crossSpaceCall.callEVM(ePoolAddrB20(), abi.encodeWithSignature("espacebalanceof(address)", address(ePoolAddrB20())));
+    crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
+    bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
     uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
     uint64 votePower = uint64(balanceinpool.div(CFX_VALUE_OF_ONE_VOTE));
     if (votePower > 0){
+      crossSpaceCall.withdrawFromMapped(votePower.mul(CFX_VALUE_OF_ONE_VOTE));
       IExchange(poolAddress[pos_id_in_use]).increaseStake(votePower);
     }
   }
