@@ -172,15 +172,16 @@ contract CoreBridge_multipool is Ownable {
   function SyncValue() public Only_in_order Only_trusted_trigers {
     require(identifier==3,"identifier is not right, need be 3");
     uint256 sum = IERC20(xCFXAddress).totalSupply() ; 
-    bytes memory rawbalance = crossSpaceCall.callEVM(ePoolAddrB20(), abi.encodeWithSignature("espacebalanceof(address)", ePoolAddrB20()));
-    uint256 balanceinpool =  abi.decode(rawbalance, (uint256));    uint256 pool_sum = poolAddress.length;
+    bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
+    uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
+    uint256 pool_sum = poolAddress.length;
     uint256 SUMvotes;
     for(uint256 i=0;i<pool_sum;i++)
     {
         SUMvotes += IExchange(poolAddress[i]).poolSummary().totalvotes;
     }
     uint256 xCFXvalues =balanceinpool.add(SUMvotes.mul(CFX_VALUE_OF_ONE_VOTE)).div(sum);
-    crossSpaceCall.callEVM(ePoolAddrB20(), abi.encodeWithSignature("setxCFXValue(uint256)", xCFXvalues));
+    crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setxCFXValue(uint256)", xCFXvalues));
   }
 
   function handleUnstake() public Only_in_order Only_trusted_trigers {
@@ -195,12 +196,12 @@ contract CoreBridge_multipool is Ownable {
     uint256 firstUnstakeVotes;
     if (available == 0) return;
     for(uint256 i = 0; i < unstakeLen; i++) {
-      rawFirstUnstakeVotes = crossSpaceCall.callEVM(ePoolAddrB20(), abi.encodeWithSignature("firstUnstakeVotes()"));
+      rawFirstUnstakeVotes = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("firstUnstakeVotes()"));
       firstUnstakeVotes = abi.decode(rawFirstUnstakeVotes, (uint256));
       if (firstUnstakeVotes == 0) break;
       if (firstUnstakeVotes > available) break;
       posPool.decreaseStake(uint64(firstUnstakeVotes));
-      crossSpaceCall.callEVM(ePoolAddrB20(), abi.encodeWithSignature("handleUnstakeTask()"));
+      crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("handleUnstakeTask()"));
       available -= firstUnstakeVotes;
     }
   }
