@@ -108,12 +108,12 @@ contract CoreBridge_multipool is Ownable {
   //-----------------espace method-------------------------------------------------------------------------------------
 
   function queryespacexCFXincrease() public returns (uint256) {
-    bytes memory rawCrossingVotes = crossSpaceCall.callEVM(ePoolAddrB20(), abi.encodeWithSignature("crossingVotes()"));
+    bytes memory rawCrossingVotes = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("crossingVotes()"));
     return abi.decode(rawCrossingVotes, (uint256));
   }
 
   function queryUnstakeLen() public returns (uint256) {
-    bytes memory rawUnstakeLen = crossSpaceCall.callEVM(ePoolAddrB20(), abi.encodeWithSignature("unstakeLen()"));
+    bytes memory rawUnstakeLen = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("unstakeLen()"));
     return abi.decode(rawUnstakeLen, (uint256));
   }
 
