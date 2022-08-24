@@ -163,7 +163,7 @@ contract CoreBridge_multipool is Ownable {
       if (interest > 0) {
         allinterest += posPool.claimAllInterest(); 
       }
-      system_cfxinterests_temp += interest.mul(RATIO_BASE-poolUserShareRatio).div(RATIO_BASE);
+      system_cfxinterests_temp = interest.mul(RATIO_BASE-poolUserShareRatio).div(RATIO_BASE);
     }
     require(system_cfxinterests_temp > 0,"interests in all pool is zero");
     return system_cfxinterests_temp;
@@ -172,7 +172,7 @@ contract CoreBridge_multipool is Ownable {
     require(identifier==2,"identifier is not right, need be 2");
     require(system_cfxinterests_temp!=0,'system_cfxinterests is cleaned');
     uint256 toxCFX = system_cfxinterests_temp;
-    system_cfxinterests_temp == 0;
+    system_cfxinterests_temp = 0;
     crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
     bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
     uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
