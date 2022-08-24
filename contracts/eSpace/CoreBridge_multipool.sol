@@ -60,6 +60,9 @@ contract CoreBridge_multipool is Ownable {
 
   function initialize() public {
     crossSpaceCall = CrossSpaceCall(0x0888000000000000000000000000000000000006);
+    poolUserShareRatio = 9000;
+    CFX_COUNT_OF_ONE_VOTE = 1000;
+    CFX_VALUE_OF_ONE_VOTE = 1000 ether;
   }
 
   function addPoolAddress(address _poolAddress) public onlyOwner {
@@ -104,10 +107,18 @@ contract CoreBridge_multipool is Ownable {
   function getPoolAddress() public view returns (address[] memory ) {
     return poolAddress;
   }
-  
-  // function ePoolAddrB20() public view returns (bytes20) {
-  //   return bytes20(address(this));
-  // }
+
+  /// @param count Vote cfx count, unit is cfx
+  function _setCfxCountOfOneVote(uint256 count) public onlyOwner {
+    CFX_COUNT_OF_ONE_VOTE = count;
+    CFX_VALUE_OF_ONE_VOTE = count * 1 ether;
+  }
+
+  function setPoolUserShareRatio(uint64 ratio) public onlyOwner {
+    require(ratio > 0 && ratio <= RATIO_BASE, "ratio should be 1-10000");
+    poolUserShareRatio = ratio;
+  }
+
   //-----------------espace method-------------------------------------------------------------------------------------
 
   function queryespacexCFXincrease() public returns (uint256) {
@@ -151,9 +162,8 @@ contract CoreBridge_multipool is Ownable {
       interest = posPool.temp_Interest();
       if (interest > 0) {
         allinterest += posPool.claimAllInterest(); 
-        crossSpaceCall.transferEVM{value: interest}(bytes20(bridge_eSpaceAddress));
       }
-      system_cfxinterests_temp += interest;
+      system_cfxinterests_temp += interest.mul(RATIO_BASE-poolUserShareRatio).div(RATIO_BASE);
     }
     require(system_cfxinterests_temp > 0,"interests in all pool is zero");
     return system_cfxinterests_temp;
@@ -162,66 +172,52 @@ contract CoreBridge_multipool is Ownable {
     require(identifier==2,"identifier is not right, need be 2");
     require(system_cfxinterests_temp!=0,'system_cfxinterests is cleaned');
     uint256 toxCFX = system_cfxinterests_temp;
-    // system_cfxinterests_temp == 0;
+    system_cfxinterests_temp == 0;
     crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
     bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
     uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
-    uint64 votePower = uint64(balanceinpool.div(CFX_VALUE_OF_ONE_VOTE));
+    crossSpaceCall.withdrawFromMapped(balanceinpool);
+    uint64 votePower = uint64(address(this).div(CFX_VALUE_OF_ONE_VOTE));
     if (votePower > 0){
-      crossSpaceCall.withdrawFromMapped(votePower*CFX_VALUE_OF_ONE_VOTE);
       IExchange(poolAddress[pos_id_in_use]).increaseStake(votePower);
     }
     return votePower;
   }
-  function campounds1() public Only_in_order Only_trusted_trigers  returns(uint256){
-    // require(identifier==2,"identifier is not right, need be 2");
-    // require(system_cfxinterests_temp!=0,'system_cfxinterests is cleaned');
-    // uint256 toxCFX = system_cfxinterests_temp;
-    // system_cfxinterests_temp == 0;
-    crossSpaceCall.callEVM{value: 1 ether}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
-    return 1;
-  }
-  function campounds2() public Only_in_order Only_trusted_trigers  returns(uint256){
-    // require(identifier==2,"identifier is not right, need be 2");
-    // require(system_cfxinterests_temp!=0,'system_cfxinterests is cleaned');
-    // uint256 toxCFX = system_cfxinterests_temp;
-    // system_cfxinterests_temp == 0;
-    bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
-    uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
-    // uint64 votePower = uint64(balanceinpool.div(CFX_VALUE_OF_ONE_VOTE));
-    // if (votePower > 0){
-    //   crossSpaceCall.withdrawFromMapped(votePower*CFX_VALUE_OF_ONE_VOTE);
-    //   IExchange(poolAddress[pos_id_in_use]).increaseStake(votePower);
-    // }
-    return balanceinpool;
-  }
-  function campounds3() public Only_in_order Only_trusted_trigers  returns(uint256){
-    // require(identifier==2,"identifier is not right, need be 2");
-    // require(system_cfxinterests_temp!=0,'system_cfxinterests is cleaned');
-    // uint256 toxCFX = system_cfxinterests_temp;
-    // system_cfxinterests_temp == 0;
-    bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
-    uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
-    uint64 votePower = uint64(balanceinpool.div(CFX_VALUE_OF_ONE_VOTE));
-    if (votePower > 0){
-      crossSpaceCall.withdrawFromMapped(votePower*CFX_VALUE_OF_ONE_VOTE);
-      IExchange(poolAddress[pos_id_in_use]).increaseStake(votePower);
-    }
-    return balanceinpool;
-  }
+  // function campounds1() public Only_in_order Only_trusted_trigers  returns(uint256){
+  //   crossSpaceCall.callEVM{value: 1 ether}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
+  //   return 1;
+  // }
+  // function campounds2() public Only_in_order Only_trusted_trigers  returns(uint256){
+
+  //   bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
+  //   uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
+
+  //   return balanceinpool;
+  // }
+  // function campounds3() public Only_in_order Only_trusted_trigers  returns(uint64){
+
+  //   bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
+  //   uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
+  //   uint64 votePower = uint64(balanceinpool.div(CFX_VALUE_OF_ONE_VOTE));
+  //   if (votePower > 0){
+  //     crossSpaceCall.withdrawFromMapped(votePower*CFX_VALUE_OF_ONE_VOTE);
+  //     IExchange(poolAddress[pos_id_in_use]).increaseStake(votePower);
+  //   }
+  //   return votePower;
+  // }
 
   function SyncValue() public Only_in_order Only_trusted_trigers {
     require(identifier==3,"identifier is not right, need be 3");
     uint256 sum = IERC20(xCFXAddress).totalSupply() ; 
-    bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
-    uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
+    // bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
+    uint256 balanceinpool =  address(this).balance;
     uint256 pool_sum = poolAddress.length;
     uint256 SUMvotes;
     for(uint256 i=0;i<pool_sum;i++)
     {
         SUMvotes += IExchange(poolAddress[i]).poolSummary().totalvotes;
     }
-    uint256 xCFXvalues =balanceinpool.add(SUMvotes.mul(CFX_VALUE_OF_ONE_VOTE)).div(sum);
+    uint256 xCFXvalues =(balanceinpool+SUMvotes.mul(CFX_VALUE_OF_ONE_VOTE)).div(sum);
     crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setxCFXValue(uint256)", xCFXvalues));
   }
 
