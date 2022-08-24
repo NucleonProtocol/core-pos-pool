@@ -152,6 +152,7 @@ contract CoreBridge_multipool is Ownable {
         crossSpaceCall.transferEVM{value: interest}(bytes20(bridge_eSpaceAddress));
       }
     }
+    require(system_cfxinterests_temp > 0,"interests in all pool is zero");
     return system_cfxinterests_temp;
   }
   function campounds() public Only_in_order Only_trusted_trigers {
