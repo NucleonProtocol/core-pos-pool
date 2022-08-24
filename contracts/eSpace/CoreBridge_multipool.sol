@@ -91,6 +91,9 @@ contract CoreBridge_multipool is Ownable {
   function seteSpaceExroomAddress(address _eSpaceExroomAddress) public onlyOwner {
     eSpaceExroomAddress = _eSpaceExroomAddress;
   }
+  function seteSpacebridgeAddress(address _bridge_eSpaceAddress) public onlyOwner {
+    bridge_eSpaceAddress = _bridge_eSpaceAddress;
+  }
   function settrusted_trigers(address _Address,bool state) public onlyOwner {
     trusted_node_trigers[_Address] = state;
   }
@@ -141,25 +144,25 @@ contract CoreBridge_multipool is Ownable {
     uint256 pool_sum = poolAddress.length;
     IExchange posPool;
     uint256 interest;
-    
+    uint256 allinterest;
     for(uint256 i=0;i<pool_sum;i++)
     {
       posPool = IExchange(poolAddress[i]);
       interest = posPool.temp_Interest();
       if (interest > 0) {
-        interest = posPool.claimAllInterest(); 
-        system_cfxinterests_temp += interest;
+        allinterest += posPool.claimAllInterest(); 
         crossSpaceCall.transferEVM{value: interest}(bytes20(bridge_eSpaceAddress));
       }
+      system_cfxinterests_temp += interest;
     }
     require(system_cfxinterests_temp > 0,"interests in all pool is zero");
     return system_cfxinterests_temp;
   }
-  function campounds() public Only_in_order Only_trusted_trigers {
+  function campounds() public Only_in_order Only_trusted_trigers  returns(uint256){
     require(identifier==2,"identifier is not right, need be 2");
     require(system_cfxinterests_temp!=0,'system_cfxinterests is cleaned');
     uint256 toxCFX = system_cfxinterests_temp;
-    system_cfxinterests_temp == 0;
+    // system_cfxinterests_temp == 0;
     crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
     bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
     uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
@@ -168,6 +171,43 @@ contract CoreBridge_multipool is Ownable {
       crossSpaceCall.withdrawFromMapped(votePower*CFX_VALUE_OF_ONE_VOTE);
       IExchange(poolAddress[pos_id_in_use]).increaseStake(votePower);
     }
+    return votePower;
+  }
+  function campounds1() public Only_in_order Only_trusted_trigers  returns(uint256){
+    // require(identifier==2,"identifier is not right, need be 2");
+    // require(system_cfxinterests_temp!=0,'system_cfxinterests is cleaned');
+    // uint256 toxCFX = system_cfxinterests_temp;
+    // system_cfxinterests_temp == 0;
+    crossSpaceCall.callEVM{value: 1 ether}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
+    return 1;
+  }
+  function campounds2() public Only_in_order Only_trusted_trigers  returns(uint256){
+    // require(identifier==2,"identifier is not right, need be 2");
+    // require(system_cfxinterests_temp!=0,'system_cfxinterests is cleaned');
+    // uint256 toxCFX = system_cfxinterests_temp;
+    // system_cfxinterests_temp == 0;
+    bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
+    uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
+    // uint64 votePower = uint64(balanceinpool.div(CFX_VALUE_OF_ONE_VOTE));
+    // if (votePower > 0){
+    //   crossSpaceCall.withdrawFromMapped(votePower*CFX_VALUE_OF_ONE_VOTE);
+    //   IExchange(poolAddress[pos_id_in_use]).increaseStake(votePower);
+    // }
+    return balanceinpool;
+  }
+  function campounds3() public Only_in_order Only_trusted_trigers  returns(uint256){
+    // require(identifier==2,"identifier is not right, need be 2");
+    // require(system_cfxinterests_temp!=0,'system_cfxinterests is cleaned');
+    // uint256 toxCFX = system_cfxinterests_temp;
+    // system_cfxinterests_temp == 0;
+    bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
+    uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
+    uint64 votePower = uint64(balanceinpool.div(CFX_VALUE_OF_ONE_VOTE));
+    if (votePower > 0){
+      crossSpaceCall.withdrawFromMapped(votePower*CFX_VALUE_OF_ONE_VOTE);
+      IExchange(poolAddress[pos_id_in_use]).increaseStake(votePower);
+    }
+    return balanceinpool;
   }
 
   function SyncValue() public Only_in_order Only_trusted_trigers {
@@ -237,5 +277,6 @@ contract CoreBridge_multipool is Ownable {
 
   //--------------------------------------temp-----------------------------------------------
    function identifier_test(uint256 _identifier) public onlyOwner {identifier=_identifier; }
+   function system_cfxinterests_temp_set(uint256 _i) public onlyOwner {system_cfxinterests_temp=_i; }
   
 }
