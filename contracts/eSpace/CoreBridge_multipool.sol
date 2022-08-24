@@ -94,6 +94,9 @@ contract CoreBridge_multipool is Ownable {
   function seteSpaceExroomAddress(address _eSpaceExroomAddress) public onlyOwner {
     eSpaceExroomAddress = _eSpaceExroomAddress;
   }
+  function seteSpacexCFXAddress(address _eSpacexCFXaddr) public onlyOwner {
+    xCFXAddress = _eSpacexCFXaddr;
+  }
   function seteSpacebridgeAddress(address _bridge_eSpaceAddress) public onlyOwner {
     bridge_eSpaceAddress = _bridge_eSpaceAddress;
   }
@@ -206,19 +209,21 @@ contract CoreBridge_multipool is Ownable {
   //   return votePower;
   // }
 
-  function SyncValue() public Only_in_order Only_trusted_trigers {
+  function SyncValue() public Only_in_order Only_trusted_trigers returns(uint256){
     require(identifier==3,"identifier is not right, need be 3");
-    uint256 sum = IERC20(xCFXAddress).totalSupply() ; 
-    // bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
-    uint256 balanceinpool =  address(this).balance;
+    
+    bytes memory rawsum = crossSpaceCall.callEVM(bytes20(xCFXAddress), abi.encodeWithSignature("totalSupply()"));
+    uint256 sum = abi.decode(rawsum, (uint256));
+    uint256 balanceinbridge =  address(this).balance;
     uint256 pool_sum = poolAddress.length;
-    uint256 SUMvotes;
+    uint256 poolvotes_sum;
     for(uint256 i=0;i<pool_sum;i++)
     {
-        SUMvotes += IExchange(poolAddress[i]).poolSummary().totalvotes;
+        poolvotes_sum += IExchange(poolAddress[i]).poolSummary().totalvotes;
     }
-    uint256 xCFXvalues =(balanceinpool+SUMvotes.mul(CFX_VALUE_OF_ONE_VOTE)).div(sum);
+    uint256 xCFXvalues =((balanceinbridge+poolvotes_sum.mul(CFX_VALUE_OF_ONE_VOTE)) * 1 ether ).div(sum);
     crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setxCFXValue(uint256)", xCFXvalues));
+    return xCFXvalues;
   }
 
   function handleUnstake() public Only_in_order Only_trusted_trigers {
