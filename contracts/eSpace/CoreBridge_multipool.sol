@@ -177,7 +177,7 @@ contract CoreBridge_multipool is Ownable {
     bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
     uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
     crossSpaceCall.withdrawFromMapped(balanceinpool);
-    uint64 votePower = uint64(address(this).div(CFX_VALUE_OF_ONE_VOTE));
+    uint64 votePower = uint64(address(this).balance.div(CFX_VALUE_OF_ONE_VOTE));
     if (votePower > 0){
       IExchange(poolAddress[pos_id_in_use]).increaseStake(votePower);
     }
