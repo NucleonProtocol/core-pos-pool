@@ -238,7 +238,7 @@ contract CoreBridge_multipool is Ownable {
     uint256 pool_sum = poolAddress.length;
     IExchange posPool;
     uint256 temp_unlocked;
-    //uint256 transferValue;
+    uint256 transferValue;
     for(uint256 i=0;i<pool_sum;i++)
     {
       posPool = IExchange(poolAddress[i]);
