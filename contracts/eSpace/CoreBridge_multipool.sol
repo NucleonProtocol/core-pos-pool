@@ -248,8 +248,8 @@ contract CoreBridge_multipool is Ownable {
       {
         posPool.withdrawStake();
         // transfer to eSpacePool and call method
-        //transferValue = temp_unlocked * 1000 ether;
-        //crossSpaceCall.callEVM{value: transferValue}(ePoolAddrB20(), abi.encodeWithSignature("handleUnlockedIncrease(uint256)", userSummary.unlocked));
+        transferValue = temp_unlocked * 1000 ether;
+        crossSpaceCall.callEVM{value: transferValue}(ePoolAddrB20(), abi.encodeWithSignature("handleUnlockedIncrease(uint256)", userSummary.unlocked));
       }
     }
   }
