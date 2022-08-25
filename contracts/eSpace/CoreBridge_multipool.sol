@@ -186,28 +186,6 @@ contract CoreBridge_multipool is Ownable {
     }
     return votePower;
   }
-  // function campounds1() public Only_in_order Only_trusted_trigers  returns(uint256){
-  //   crossSpaceCall.callEVM{value: 1 ether}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
-  //   return 1;
-  // }
-  // function campounds2() public Only_in_order Only_trusted_trigers  returns(uint256){
-
-  //   bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
-  //   uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
-
-  //   return balanceinpool;
-  // }
-  // function campounds3() public Only_in_order Only_trusted_trigers  returns(uint64){
-
-  //   bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
-  //   uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
-  //   uint64 votePower = uint64(balanceinpool.div(CFX_VALUE_OF_ONE_VOTE));
-  //   if (votePower > 0){
-  //     crossSpaceCall.withdrawFromMapped(votePower*CFX_VALUE_OF_ONE_VOTE);
-  //     IExchange(poolAddress[pos_id_in_use]).increaseStake(votePower);
-  //   }
-  //   return votePower;
-  // }
 
   function SyncValue() public Only_in_order Only_trusted_trigers returns(uint256){
     require(identifier==3,"identifier is not right, need be 3");
@@ -225,12 +203,12 @@ contract CoreBridge_multipool is Ownable {
     crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setxCFXValue(uint256)", xCFXvalues));
     return xCFXvalues;
   }
-
+  uint256 Unstakebalanceinbridge;
   function handleUnstake() public Only_in_order Only_trusted_trigers {
     require(identifier==4,"identifier is not right, need be 4");
     uint256 unstakeLen = queryUnstakeLen();
     if (unstakeLen == 0) return;
-    if (unstakeLen > 50) unstakeLen = 50; // max 50 unstakes per call
+    if (unstakeLen > 5000) unstakeLen = 5000; // max 1000 unstakes per call
     IExchange posPool = IExchange(poolAddress[pos_id_in_use]);
     IExchange.PoolSummary memory poolSummary = posPool.poolSummary();
     uint256 available = poolSummary.totalvotes;
@@ -242,9 +220,16 @@ contract CoreBridge_multipool is Ownable {
       firstUnstakeVotes = abi.decode(rawFirstUnstakeVotes, (uint256));
       if (firstUnstakeVotes == 0) break;
       if (firstUnstakeVotes > available) break;
-      posPool.decreaseStake(uint64(firstUnstakeVotes));
+      Unstakebalanceinbridge += firstUnstakeVotes;
+
+      //posPool.decreaseStake(uint64(firstUnstakeVotes));
       crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("handleUnstakeTask()"));
-      available -= firstUnstakeVotes;
+      //available -= firstUnstakeVotes;
+    }
+    if(Unstakebalanceinbridge > CFX_VALUE_OF_ONE_VOTE){
+      posPool.decreaseStake(uint64(Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE)));
+      available -= Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE);
+      Unstakebalanceinbridge -= Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE).mul(CFX_VALUE_OF_ONE_VOTE);
     }
   }
 
