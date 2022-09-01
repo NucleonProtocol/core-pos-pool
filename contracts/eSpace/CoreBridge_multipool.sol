@@ -22,7 +22,7 @@ contract CoreBridge_multipool is Ownable {
   uint256 CFX_VALUE_OF_ONE_VOTE = 1000 ether;
 
   address[] public poolAddress;               // can use many pools, so here is an array
-  uint256   public pos_id_in_use;             // pos pool in use
+  uint256   public PosIDinuse;             // pos pool in use
   //eSpace address
   address   public xCFXAddress;               // xCFX addr in espace 
   address   public eSpaceExroomAddress;       //Exchange room Address in espace
@@ -30,7 +30,7 @@ contract CoreBridge_multipool is Ownable {
   //Core Space address
   address   public CoreExroomAddress;         //Exchange room Address in core
   address   public ServicetreasuryAddress;    //Service treasury Address in core
-  uint256   public system_cfxinterests_temp; //pools cfx interests in temporary
+  uint256   public systemCFXInterestsTemp; //pools cfx interests in temporary
   //
   uint256   public identifier;                //Execution number , should be private when use in main net
   mapping(address=>bool) trusted_node_trigers;//     
@@ -154,7 +154,7 @@ contract CoreBridge_multipool is Ownable {
 
   function claimInterests() public Only_in_order Only_trusted_trigers returns(uint256){
     require(identifier==1,"identifier is not right, need be 1");
-    require(system_cfxinterests_temp==0,'system_cfxinterests not cleaned');
+    require(systemCFXInterestsTemp==0,'system_cfxinterests not cleaned');
     uint256 pool_sum = poolAddress.length;
     IExchange posPool;
     uint256 interest;
@@ -166,23 +166,23 @@ contract CoreBridge_multipool is Ownable {
       if (interest > 0) {
         allinterest += posPool.claimAllInterest(); 
       }
-      system_cfxinterests_temp = interest.mul(RATIO_BASE-poolUserShareRatio).div(RATIO_BASE);
     }
-    require(system_cfxinterests_temp > 0,"interests in all pool is zero");
-    return system_cfxinterests_temp;
+    systemCFXInterestsTemp = interest.mul(RATIO_BASE-poolUserShareRatio).div(RATIO_BASE);
+    require(systemCFXInterestsTemp > 0,"interests in all pool is zero");
+    return systemCFXInterestsTemp;
   }
   function campounds() public Only_in_order Only_trusted_trigers  returns(uint256){
     require(identifier==2,"identifier is not right, need be 2");
-    require(system_cfxinterests_temp!=0,'system_cfxinterests is cleaned');
-    uint256 toxCFX = system_cfxinterests_temp;
-    system_cfxinterests_temp = 0;
+    require(systemCFXInterestsTemp!=0,'system_cfxinterests is cleaned');
+    uint256 toxCFX = systemCFXInterestsTemp;
+    systemCFXInterestsTemp = 0;
     crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
     bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
     uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
     crossSpaceCall.withdrawFromMapped(balanceinpool);
     uint64 votePower = uint64(address(this).balance.div(CFX_VALUE_OF_ONE_VOTE));
     if (votePower > 0){
-      IExchange(poolAddress[pos_id_in_use]).increaseStake(votePower);
+      IExchange(poolAddress[PosIDinuse]).increaseStake(votePower);
     }
     return votePower;
   }
@@ -195,12 +195,15 @@ contract CoreBridge_multipool is Ownable {
     uint256 balanceinbridge =  address(this).balance;
     uint256 pool_sum = poolAddress.length;
     uint256 poolvotes_sum;
+    uint256 poolLockedvotesSUM;
     for(uint256 i=0;i<pool_sum;i++)
     {
         poolvotes_sum += IExchange(poolAddress[i]).poolSummary().totalvotes;
+        poolLockedvotesSUM += IExchange(poolAddress[i]).poolSummary().locked;
     }
     uint256 xCFXvalues =((balanceinbridge+poolvotes_sum.mul(CFX_VALUE_OF_ONE_VOTE)) * 1 ether ).div(sum);
     crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setxCFXValue(uint256)", xCFXvalues));
+    crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setlockedvotes(uint256)", xCFXvalues));
     return xCFXvalues;
   }
   uint256 Unstakebalanceinbridge;
@@ -209,9 +212,9 @@ contract CoreBridge_multipool is Ownable {
     uint256 unstakeLen = queryUnstakeLen();
     if (unstakeLen == 0) return;
     if (unstakeLen > 5000) unstakeLen = 5000; // max 1000 unstakes per call
-    IExchange posPool = IExchange(poolAddress[pos_id_in_use]);
+    IExchange posPool = IExchange(poolAddress[PosIDinuse]);
     IExchange.PoolSummary memory poolSummary = posPool.poolSummary();
-    uint256 available = poolSummary.totalvotes;
+    uint256 available = poolSummary.totalvotes.mul(CFX_VALUE_OF_ONE_VOTE);
     bytes memory rawFirstUnstakeVotes ;
     uint256 firstUnstakeVotes;
     if (available == 0) return;
@@ -264,6 +267,6 @@ contract CoreBridge_multipool is Ownable {
 
   //--------------------------------------temp-----------------------------------------------
    function identifier_test(uint256 _identifier) public onlyOwner {identifier=_identifier; }
-   function system_cfxinterests_temp_set(uint256 _i) public onlyOwner {system_cfxinterests_temp=_i; }
+   function systemCFXInterestsTemp_set(uint256 _i) public onlyOwner {systemCFXInterestsTemp=_i; }
   
 }
