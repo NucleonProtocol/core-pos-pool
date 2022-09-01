@@ -91,6 +91,10 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     lastPoolShot.blockNumber = _blockNumber();
   }
 
+  function _selfBalance() internal view virtual returns (uint256) {
+    return address(this).balance;
+  }
+
   // ======================== Events ==============================
 
   event IncreasePoSStake(address indexed user, uint256 votePower);
@@ -214,7 +218,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   /// @notice Claim all interest in pool
   ///
   function claimAllInterest() public onlyRegisted onlybridge returns (uint256){
-    uint claimableInterest = address(this).balance;
+    uint claimableInterest = _selfBalance();
     require(claimableInterest > 0, "No claimable interest");
     address payable receiver = payable(bridge_storage);
     receiver.transfer(claimableInterest);
@@ -222,7 +226,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   }
 
   function temp_Interest() public view onlyRegisted returns (uint256){
-    return address(this).balance;
+    return _selfBalance() ;
   }
   // ======================== Contract view methods interface use =========================
   /// 
