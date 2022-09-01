@@ -220,19 +220,6 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     receiver.transfer(claimableInterest);
     return claimableInterest;
   }
-  // function test_transfer() public onlyRegisted onlybridge returns (uint256){
-  //   uint claimableInterest = address(this).balance;
-  //   //require(claimableInterest > 0, "No claimable interest");
-  //   address payable receiver = payable(msg.sender);
-  //   transferCFX( receiver,  claimableInterest);
-  //   //receiver.transfer(claimableInterest);
-  //   return claimableInterest;
-  // }
-
-  // function transferCFX(address _address, uint256 _value) internal{
-  //       (bool res, ) = address(uint160(_address)).call{value:_value}("");
-  //       require(res,"TRANSFER ETH ERROR");
-  // }
 
   function temp_Interest() public view onlyRegisted returns (uint256){
     return address(this).balance;
