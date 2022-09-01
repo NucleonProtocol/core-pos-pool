@@ -32,7 +32,7 @@ contract CoreBridge_multipool is Ownable {
   address   public ServicetreasuryAddress;    //Service treasury Address in core
   uint256   public systemCFXInterestsTemp; //pools cfx interests in temporary
   //
-  uint256   public identifier;                //Execution number , should be private when use in main net
+  //uint256   public identifier;                //Execution number , should be private when use in main net
   mapping(address=>bool) trusted_node_trigers;//     
   // ======================== Struct definitions =========================
   struct PoolSummary {
@@ -153,7 +153,7 @@ contract CoreBridge_multipool is Ownable {
   }
 
   function claimInterests() public Only_in_order Only_trusted_trigers returns(uint256){
-    require(identifier==1,"identifier is not right, need be 1");
+    //require(identifier==1,"identifier is not right, need be 1");
     require(systemCFXInterestsTemp==0,'system_cfxinterests not cleaned');
     uint256 pool_sum = poolAddress.length;
     IExchange posPool;
@@ -172,7 +172,7 @@ contract CoreBridge_multipool is Ownable {
     return systemCFXInterestsTemp;
   }
   function campounds() public Only_in_order Only_trusted_trigers  returns(uint256){
-    require(identifier==2,"identifier is not right, need be 2");
+    //require(identifier==2,"identifier is not right, need be 2");
     require(systemCFXInterestsTemp!=0,'system_cfxinterests is cleaned');
     uint256 toxCFX = systemCFXInterestsTemp;
     systemCFXInterestsTemp = 0;
@@ -188,7 +188,7 @@ contract CoreBridge_multipool is Ownable {
   }
 
   function SyncValue() public Only_in_order Only_trusted_trigers returns(uint256){
-    require(identifier==3,"identifier is not right, need be 3");
+    //require(identifier==3,"identifier is not right, need be 3");
     
     bytes memory rawsum = crossSpaceCall.callEVM(bytes20(xCFXAddress), abi.encodeWithSignature("totalSupply()"));
     uint256 sum = abi.decode(rawsum, (uint256));
@@ -208,7 +208,7 @@ contract CoreBridge_multipool is Ownable {
   }
   uint256 Unstakebalanceinbridge;
   function handleUnstake() public Only_in_order Only_trusted_trigers {
-    require(identifier==4,"identifier is not right, need be 4");
+    //require(identifier==4,"identifier is not right, need be 4");
     uint256 unstakeLen = queryUnstakeLen();
     if (unstakeLen == 0) return;
     if (unstakeLen > 5000) unstakeLen = 5000; // max 1000 unstakes per call
@@ -237,7 +237,7 @@ contract CoreBridge_multipool is Ownable {
   }
 
   function withdrawVotes() public Only_in_order Only_trusted_trigers {
-    require(identifier==5,"identifier is not right, need be 5");
+    //require(identifier==5,"identifier is not right, need be 5");
     uint256 pool_sum = poolAddress.length;
     IExchange posPool;
     uint256 temp_unlocked;
