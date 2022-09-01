@@ -91,10 +91,6 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     lastPoolShot.blockNumber = _blockNumber();
   }
 
-  function _selfBalance() internal view virtual returns (uint256) {
-    return address(this).balance;
-  }
-
   // ======================== Events ==============================
 
   event IncreasePoSStake(address indexed user, uint256 votePower);
