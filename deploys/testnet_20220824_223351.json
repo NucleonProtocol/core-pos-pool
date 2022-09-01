@@ -1,0 +1,74 @@
+{
+  "network": "testnet",
+  "codeHash": "0x4b2d43eb87e73aacea0a204b29f062fe154040215f70a6e4855173a78f39f2db",
+  "array": [],
+  "obj": {},
+  "receipt": {
+    "transactionHash": "0xa66c1239a0ec333bd861ef6da2d901583a26a04466de258ca2fa8f26306a911c",
+    "index": 0,
+    "blockHash": "0xce25fb08c75f970a35d8b4b7e37c85d4f911d96b5d6a9430c6ae75d6217ef7c0",
+    "epochNumber": 88974585,
+    "from": "cfxtest:aapdebdgk3enzyank125cuh597eshk4mdu4ap5hg3e",
+    "to": null,
+    "gasUsed": "340124",
+    "gasFee": "340124000000000",
+    "contractCreated": "cfxtest:acgmv02u9ssu3zzyjnsbggfn1ws5bbf8r63dab2vzs",
+    "logs": [],
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "stateRoot": "0xf97e2f94a1a32dec72f9dc4bdb22442182ab2eab7455cfb8ac55881a293a34bd",
+    "outcomeStatus": 0,
+    "txExecErrorMsg": null,
+    "gasCoveredBySponsor": false,
+    "storageCoveredBySponsor": false,
+    "storageCollateralized": "1088",
+    "storageReleased": []
+  },
+  "abi": [
+    {
+      "inputs": [],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr",
+          "type": "address",
+          "networkId": 1
+        }
+      ],
+      "name": "ePoolAddrB20",
+      "outputs": [
+        {
+          "internalType": "bytes20",
+          "name": "",
+          "type": "bytes20"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "balanceinpool",
+          "type": "uint256"
+        }
+      ],
+      "name": "bridges",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}

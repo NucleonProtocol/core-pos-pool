@@ -1,0 +1,72 @@
+{
+  "network": "testnet",
+  "codeHash": "0x3c203f577a49585c15a11715b3cc3e56efb124706062f3f83906dec59a0ae567",
+  "array": [],
+  "obj": {},
+  "receipt": {
+    "transactionHash": "0x03cc21faf5fa71cd956c4d829b88075a0533f56be4a9d0ebe78bcf6cf2dc74ac",
+    "index": 0,
+    "blockHash": "0xbbd7adcabe411150789a117d0ec1c376ef48efd54619e29bf4250a5ce26d5478",
+    "epochNumber": 88653827,
+    "from": "cfxtest:aapdebdgk3enzyank125cuh597eshk4mdu4ap5hg3e",
+    "to": null,
+    "gasUsed": "473583",
+    "gasFee": "473583000000000",
+    "contractCreated": "cfxtest:acetcf0t27f99esej840keakg16z8as3aavsgd2zhs",
+    "logs": [],
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "stateRoot": "0x8f58189259c54022a0c880c3fd29165d2af1af318f9a238e85c7185ca124ea63",
+    "outcomeStatus": 0,
+    "txExecErrorMsg": null,
+    "gasCoveredBySponsor": false,
+    "storageCoveredBySponsor": false,
+    "storageCollateralized": "1024",
+    "storageReleased": []
+  },
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr",
+          "type": "address",
+          "networkId": 1
+        }
+      ],
+      "name": "ePoolAddrB20",
+      "outputs": [
+        {
+          "internalType": "bytes20",
+          "name": "",
+          "type": "bytes20"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes20",
+          "name": "A",
+          "type": "bytes20"
+        },
+        {
+          "internalType": "bytes20",
+          "name": "B",
+          "type": "bytes20"
+        }
+      ],
+      "name": "bridges",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}

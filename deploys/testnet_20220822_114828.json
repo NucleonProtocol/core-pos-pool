@@ -1,0 +1,73 @@
+{
+  "network": "testnet",
+  "codeHash": "0xfe1758add6ccc3c53bc2690c435055ba0fdae28f6276c81af08791dcfa9b9671",
+  "array": [],
+  "obj": {},
+  "receipt": {
+    "transactionHash": "0xfe601a8e4b5f1854e9a660dc4a44b465c181a3a348e00fffd350bb087bbee80b",
+    "index": 0,
+    "blockHash": "0xb8fac704109add99185183c15ed7191f0bd20d38ca79976372da905893e4e4e1",
+    "epochNumber": 88656945,
+    "from": "cfxtest:aapdebdgk3enzyank125cuh597eshk4mdu4ap5hg3e",
+    "to": null,
+    "gasUsed": "484660",
+    "gasFee": "484660000000000",
+    "contractCreated": "cfxtest:acd2fuzedc62ag0ev7z6mmw4krgwr4ymup0hkha2wa",
+    "logs": [],
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "stateRoot": "0x33b200e6f84ec5cb1e30097cd25b8828e9c70d32a6209c13bfec80ed2f72589c",
+    "outcomeStatus": 0,
+    "txExecErrorMsg": null,
+    "gasCoveredBySponsor": false,
+    "storageCoveredBySponsor": false,
+    "storageCollateralized": "1024",
+    "storageReleased": []
+  },
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr",
+          "type": "address",
+          "networkId": 1
+        }
+      ],
+      "name": "ePoolAddrB20",
+      "outputs": [
+        {
+          "internalType": "bytes20",
+          "name": "",
+          "type": "bytes20"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes20",
+          "name": "A",
+          "type": "bytes20"
+        },
+        {
+          "internalType": "address",
+          "name": "B",
+          "type": "address",
+          "networkId": 1
+        }
+      ],
+      "name": "bridges",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}
