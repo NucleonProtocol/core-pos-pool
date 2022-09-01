@@ -240,13 +240,13 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     return summary;
   }
 
-  /// 
-  /// @notice Query pools contract address
-  /// @return Pool's PoS address
-  ///
-  function posAddress() public view onlyRegisted returns (bytes32) {
-    return _posAddressToIdentifier(address(this));
-  }
+  // /// 
+  // /// @notice Query pools contract address
+  // /// @return Pool's PoS address
+  // ///
+  // function posAddress() public view onlyRegisted returns (bytes32) {
+  //   return _posAddressToIdentifier(address(this));
+  // }
 
   function getInQueue() public view returns (VotePowerQueue.QueueNode[] memory) {
     return Inqueues.queueItems();
