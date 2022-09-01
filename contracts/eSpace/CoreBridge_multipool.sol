@@ -47,11 +47,11 @@ contract CoreBridge_multipool is Ownable {
   }
   // ======================== Modifiers =========================
 
-  modifier Only_in_order() {
-    identifier += 1;
-    _;
-    if(identifier==5) identifier = 0;
-  }
+  // modifier Only_in_order() {
+  //   identifier += 1;
+  //   _;
+  //   if(identifier==5) identifier = 0;
+  // }
   modifier Only_trusted_trigers() {
     require(trusted_node_trigers[msg.sender]==true,'trigers must be trusted');
     _;
@@ -152,7 +152,7 @@ contract CoreBridge_multipool is Ownable {
     withdrawVotes();
   }
 
-  function claimInterests() public Only_in_order Only_trusted_trigers returns(uint256){
+  function claimInterests() public Only_trusted_trigers returns(uint256){
     //require(identifier==1,"identifier is not right, need be 1");
     require(systemCFXInterestsTemp==0,'system_cfxinterests not cleaned');
     uint256 pool_sum = poolAddress.length;
@@ -171,7 +171,7 @@ contract CoreBridge_multipool is Ownable {
     require(systemCFXInterestsTemp > 0,"interests in all pool is zero");
     return systemCFXInterestsTemp;
   }
-  function campounds() public Only_in_order Only_trusted_trigers  returns(uint256){
+  function campounds() public Only_trusted_trigers  returns(uint256){
     //require(identifier==2,"identifier is not right, need be 2");
     require(systemCFXInterestsTemp!=0,'system_cfxinterests is cleaned');
     uint256 toxCFX = systemCFXInterestsTemp;
@@ -187,7 +187,7 @@ contract CoreBridge_multipool is Ownable {
     return votePower;
   }
 
-  function SyncValue() public Only_in_order Only_trusted_trigers returns(uint256){
+  function SyncValue() public Only_trusted_trigers returns(uint256){
     //require(identifier==3,"identifier is not right, need be 3");
     
     bytes memory rawsum = crossSpaceCall.callEVM(bytes20(xCFXAddress), abi.encodeWithSignature("totalSupply()"));
@@ -207,7 +207,7 @@ contract CoreBridge_multipool is Ownable {
     return xCFXvalues;
   }
   uint256 Unstakebalanceinbridge;
-  function handleUnstake() public Only_in_order Only_trusted_trigers {
+  function handleUnstake() public Only_trusted_trigers {
     //require(identifier==4,"identifier is not right, need be 4");
     uint256 unstakeLen = queryUnstakeLen();
     if (unstakeLen == 0) return;
@@ -236,7 +236,7 @@ contract CoreBridge_multipool is Ownable {
     }
   }
 
-  function withdrawVotes() public Only_in_order Only_trusted_trigers {
+  function withdrawVotes() public Only_trusted_trigers {
     //require(identifier==5,"identifier is not right, need be 5");
     uint256 pool_sum = poolAddress.length;
     IExchange posPool;
@@ -266,7 +266,7 @@ contract CoreBridge_multipool is Ownable {
   receive() external payable {}
 
   //--------------------------------------temp-----------------------------------------------
-   function identifier_test(uint256 _identifier) public onlyOwner {identifier=_identifier; }
+   //function identifier_test(uint256 _identifier) public onlyOwner {identifier=_identifier; }
    function systemCFXInterestsTemp_set(uint256 _i) public onlyOwner {systemCFXInterestsTemp=_i; }
   
 }
