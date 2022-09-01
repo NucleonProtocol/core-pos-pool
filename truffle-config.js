@@ -1,7 +1,7 @@
 const config = require('./config.json')
 
 module.exports = {
-  contracts_directory: "./contracts/eSpace",
+  contracts_directory: "./contracts/",
   contracts_build_directory: "./build",
   compilers: {
     solc: {
