@@ -143,7 +143,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
   }
 
   //-----------------bridge method-------------------------------------------------------------------------------------
-  function syncALLwork() public onlyOwner Only_trusted_trigers {
+  function syncALLwork() public Only_trusted_trigers {
     claimInterests();
 
     campounds();
@@ -210,7 +210,8 @@ contract CoreBridge_multipool is Ownable, Initializable {
     }
     uint256 xCFXvalues =((balanceinbridge+poolvotes_sum.mul(CFX_VALUE_OF_ONE_VOTE)) * 1 ether ).div(sum);
     crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setxCFXValue(uint256)", xCFXvalues));
-    crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setlockedvotes(uint256)", xCFXvalues));
+    crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setlockedvotes(uint256)", poolLockedvotesSUM));
+    crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("handlexCFXadd()"));
     return xCFXvalues;
   }
   uint256 Unstakebalanceinbridge;
