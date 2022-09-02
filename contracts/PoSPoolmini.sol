@@ -41,11 +41,11 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   // ======================== Struct definitions =========================
 
   /// @title PoolSummary
-  /// @custom:field totalvotes Pool's total votes
+  /// @custom:field totalvotes Pool's total votes in use
   /// @custom:field locking Pool's locking votes
   /// @custom:field locked
-  /// @custom:field unlocking
-  /// @custom:field unlocked
+  /// @custom:field unlocking votes
+  /// @custom:field unlocked votes
   /// @custom:field totalInterest,total interest of whole pools
   /// @custom:field claimedInterest
 
