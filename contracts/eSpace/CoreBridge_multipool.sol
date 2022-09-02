@@ -169,7 +169,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
       }
     }
     systemCFXInterestsTemp = interest.mul(RATIO_BASE-poolUserShareRatio).div(RATIO_BASE);
-    require(systemCFXInterestsTemp > 0,"interests in all pool is zero");
+    //require(systemCFXInterestsTemp > 0,"interests in all pool is zero");
     return systemCFXInterestsTemp;
   }
   function campounds() public Only_trusted_trigers  returns(uint256){
