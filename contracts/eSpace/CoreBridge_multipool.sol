@@ -205,7 +205,9 @@ contract CoreBridge_multipool is Ownable, Initializable {
     uint256 poolLockedvotesSUM;
     for(uint256 i=0;i<pool_sum;i++)
     {
-        poolvotes_sum += IExchange(poolAddress[i]).poolSummary().totalvotes;
+        poolvotes_sum += IExchange(poolAddress[i]).poolSummary().totalvotes
+                      +  IExchange(poolAddress[i]).poolSummary().unlocking
+                      +  IExchange(poolAddress[i]).poolSummary().unlocked;
         poolLockedvotesSUM += IExchange(poolAddress[i]).poolSummary().locked;
     }
     uint256 xCFXvalues =((balanceinbridge+poolvotes_sum.mul(CFX_VALUE_OF_ONE_VOTE)) * 1 ether ).div(sum);
