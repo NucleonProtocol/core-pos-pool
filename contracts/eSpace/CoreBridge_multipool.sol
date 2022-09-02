@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "../ICrossSpaceCall.sol";
 import "../IExchange.sol";
 ///
@@ -11,7 +12,7 @@ import "../IExchange.sol";
 ///  @dev compound the interests
 ///  @notice Users cann't direct use this contract to participate Conflux PoS stake.
 ///
-contract CoreBridge_multipool is Ownable {
+contract CoreBridge_multipool is Ownable, Initializable {
   using SafeMath for uint256;
   CrossSpaceCall internal crossSpaceCall;
 
@@ -58,7 +59,7 @@ contract CoreBridge_multipool is Ownable {
   }
   // ======================== Methods for core pos pools settings =========================
 
-  function initialize() public {
+  function initialize() public initializer{
     crossSpaceCall = CrossSpaceCall(0x0888000000000000000000000000000000000006);
     poolUserShareRatio = 9000;
     CFX_COUNT_OF_ONE_VOTE = 1000;
