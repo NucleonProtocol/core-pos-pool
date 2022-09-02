@@ -27,7 +27,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
   //eSpace address
   address   public xCFXAddress;               // xCFX addr in espace 
   address   public eSpaceExroomAddress;       //Exchange room Address in espace
-  address   public bridge_eSpaceAddress;       //address of bridge in espace
+  address   public bridgeeSpaceAddress;       //address of bridge in espace
   //Core Space address
   address   public CoreExroomAddress;         //Exchange room Address in core
   address   public ServicetreasuryAddress;    //Service treasury Address in core
@@ -98,17 +98,17 @@ contract CoreBridge_multipool is Ownable, Initializable {
   function _seteSpacexCFXAddress(address _eSpacexCFXaddr) public onlyOwner {
     xCFXAddress = _eSpacexCFXaddr;
   }
-  function _seteSpacebridgeAddress(address _bridge_eSpaceAddress) public onlyOwner {
-    bridge_eSpaceAddress = _bridge_eSpaceAddress;
+  function _seteSpacebridgeAddress(address _bridgeeSpaceAddress) public onlyOwner {
+    bridgeeSpaceAddress = _bridgeeSpaceAddress;
   }
   function _settrustedtrigers(address _Address,bool state) public onlyOwner {
     trusted_node_trigers[_Address] = state;
   }
 
-  function _gettrigerstate(address _Address) public view onlyOwner returns(bool){
+  function gettrigerstate(address _Address) public view returns(bool){
     return trusted_node_trigers[_Address];
   }
-  function _getPoolAddress() public view returns (address[] memory ) {
+  function getPoolAddress() public view returns (address[] memory ) {
     return poolAddress;
   }
 
@@ -183,7 +183,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
       crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
     }
     
-    bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
+    bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridgeeSpaceAddress));
     uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
     crossSpaceCall.withdrawFromMapped(balanceinpool);
     uint64 votePower = uint64(address(this).balance.div(CFX_VALUE_OF_ONE_VOTE));
@@ -274,7 +274,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
 
   fallback() external payable {}
   receive() external payable {}
-  uint256 public identifier;
+  uint256 identifier;
   //--------------------------------------temp-----------------------------------------------
    //function identifier_test(uint256 _identifier) public onlyOwner {identifier=_identifier; }
    //function systemCFXInterestsTemp_set(uint256 _i) public onlyOwner {systemCFXInterestsTemp=_i; }
