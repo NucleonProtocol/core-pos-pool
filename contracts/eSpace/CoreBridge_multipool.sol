@@ -66,11 +66,11 @@ contract CoreBridge_multipool is Ownable, Initializable {
     CFX_VALUE_OF_ONE_VOTE = 1000 ether;
   }
 
-  function addPoolAddress(address _poolAddress) public onlyOwner {
+  function _addPoolAddress(address _poolAddress) public onlyOwner {
     poolAddress.push(_poolAddress);
   }
 
-  function changePoolAddress(address _oldpoolAddress,address _newpoolAddress) public onlyOwner {
+  function _changePoolAddress(address _oldpoolAddress,address _newpoolAddress) public onlyOwner {
     uint256 pool_sum = poolAddress.length;
     for(uint256 i=0;i<pool_sum;i++)
     {
@@ -80,7 +80,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
         }
     }
   }
-  function delePoolAddress(address _oldpoolAddress) public onlyOwner {
+  function _delePoolAddress(address _oldpoolAddress) public onlyOwner {
     uint256 pool_sum = poolAddress.length;
     for(uint256 i=0;i<pool_sum;i++)
     {
@@ -92,23 +92,23 @@ contract CoreBridge_multipool is Ownable, Initializable {
     }
   }
 
-  function seteSpaceExroomAddress(address _eSpaceExroomAddress) public onlyOwner {
+  function _seteSpaceExroomAddress(address _eSpaceExroomAddress) public onlyOwner {
     eSpaceExroomAddress = _eSpaceExroomAddress;
   }
-  function seteSpacexCFXAddress(address _eSpacexCFXaddr) public onlyOwner {
+  function _seteSpacexCFXAddress(address _eSpacexCFXaddr) public onlyOwner {
     xCFXAddress = _eSpacexCFXaddr;
   }
-  function seteSpacebridgeAddress(address _bridge_eSpaceAddress) public onlyOwner {
+  function _seteSpacebridgeAddress(address _bridge_eSpaceAddress) public onlyOwner {
     bridge_eSpaceAddress = _bridge_eSpaceAddress;
   }
-  function settrusted_trigers(address _Address,bool state) public onlyOwner {
+  function _settrustedtrigers(address _Address,bool state) public onlyOwner {
     trusted_node_trigers[_Address] = state;
   }
 
-  function get_triger_state(address _Address) public view onlyOwner returns(bool){
+  function _gettrigerstate(address _Address) public view onlyOwner returns(bool){
     return trusted_node_trigers[_Address];
   }
-  function getPoolAddress() public view returns (address[] memory ) {
+  function _getPoolAddress() public view returns (address[] memory ) {
     return poolAddress;
   }
 
@@ -118,7 +118,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
     CFX_VALUE_OF_ONE_VOTE = count * 1 ether;
   }
 
-  function setPoolUserShareRatio(uint64 ratio) public onlyOwner {
+  function _setPoolUserShareRatio(uint64 ratio) public onlyOwner {
     require(ratio > 0 && ratio <= RATIO_BASE, "ratio should be 1-10000");
     poolUserShareRatio = ratio;
   }
@@ -259,7 +259,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
     }
   }
 
-  function callEVM(address addr, bytes calldata data) public Only_trusted_trigers {
+  function callEVM(address addr, bytes calldata data) internal Only_trusted_trigers {
     crossSpaceCall.callEVM(bytes20(addr), data);
   }
 
@@ -268,6 +268,6 @@ contract CoreBridge_multipool is Ownable, Initializable {
 
   //--------------------------------------temp-----------------------------------------------
    //function identifier_test(uint256 _identifier) public onlyOwner {identifier=_identifier; }
-   function systemCFXInterestsTemp_set(uint256 _i) public onlyOwner {systemCFXInterestsTemp=_i; }
+   //function systemCFXInterestsTemp_set(uint256 _i) public onlyOwner {systemCFXInterestsTemp=_i; }
   
 }
