@@ -173,23 +173,29 @@ contract CoreBridge_multipool is Ownable, Initializable {
     return systemCFXInterestsTemp;
   }
   function campounds() public Only_trusted_trigers  returns(uint256){
-    //require(identifier==2,"identifier is not right, need be 2");
-    require(systemCFXInterestsTemp!=0,'system_cfxinterests is cleaned');
+    require(identifier==0,"identifier is not right, need be 0");
+    identifier=1;
+    // if(systemCFXInterestsTemp==0){return 0;}
+    //require(systemCFXInterestsTemp!=0,'system_cfxinterests is cleaned');
     uint256 toxCFX = systemCFXInterestsTemp;
     systemCFXInterestsTemp = 0;
-    crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
+    if(toxCFX>0){
+      crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
+    }
+    
     bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridge_eSpaceAddress));
     uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
     crossSpaceCall.withdrawFromMapped(balanceinpool);
     uint64 votePower = uint64(address(this).balance.div(CFX_VALUE_OF_ONE_VOTE));
     if (votePower > 0){
-      IExchange(poolAddress[PosIDinuse]).increaseStake(votePower);
+      IExchange(poolAddress[PosIDinuse]).increaseStake{value: votePower*CFX_VALUE_OF_ONE_VOTE}(votePower);
     }
     return votePower;
   }
 
   function SyncValue() public Only_trusted_trigers returns(uint256){
-    //require(identifier==3,"identifier is not right, need be 3");
+    require(identifier==1,"identifier is not right, need be 1");
+    identifier=0;
     
     bytes memory rawsum = crossSpaceCall.callEVM(bytes20(xCFXAddress), abi.encodeWithSignature("totalSupply()"));
     uint256 sum = abi.decode(rawsum, (uint256));
@@ -265,7 +271,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
 
   fallback() external payable {}
   receive() external payable {}
-
+  uint256 public identifier;
   //--------------------------------------temp-----------------------------------------------
    //function identifier_test(uint256 _identifier) public onlyOwner {identifier=_identifier; }
    //function systemCFXInterestsTemp_set(uint256 _i) public onlyOwner {systemCFXInterestsTemp=_i; }
