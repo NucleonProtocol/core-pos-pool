@@ -202,18 +202,18 @@ contract CoreBridge_multipool is Ownable, Initializable {
     uint256 balanceinbridge =  address(this).balance;
     uint256 pool_sum = poolAddress.length;
     uint256 poolvotes_sum;
-    uint256 poolLockedvotesSUM;
+    //uint256 poolLockedvotesSUM;
     for(uint256 i=0;i<pool_sum;i++)
     {
         poolvotes_sum += IExchange(poolAddress[i]).poolSummary().totalvotes
                       +  IExchange(poolAddress[i]).poolSummary().unlocking
                       +  IExchange(poolAddress[i]).poolSummary().unlocked;
-        poolLockedvotesSUM += IExchange(poolAddress[i]).poolSummary().locked;
+        //poolLockedvotesSUM += IExchange(poolAddress[i]).poolSummary().locked;
     }
     uint256 xCFXvalues =((balanceinbridge+poolvotes_sum.mul(CFX_VALUE_OF_ONE_VOTE)) * 1 ether ).div(sum);
     crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setxCFXValue(uint256)", xCFXvalues));
-    crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setlockedvotes(uint256)", poolLockedvotesSUM));
     crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("handlexCFXadd()"));
+    //crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setlockedvotes(uint256)", poolLockedvotesSUM));
     return xCFXvalues;
   }
   uint256 Unstakebalanceinbridge;
@@ -244,6 +244,13 @@ contract CoreBridge_multipool is Ownable, Initializable {
       available -= Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE);
       Unstakebalanceinbridge -= Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE).mul(CFX_VALUE_OF_ONE_VOTE);
     }
+    uint256 pool_sum = poolAddress.length;
+    uint256 poolLockedvotesSUM;
+    for(uint256 i=0;i<pool_sum;i++)
+    {
+        poolLockedvotesSUM += IExchange(poolAddress[i]).poolSummary().locked;
+    }
+    crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setlockedvotes(uint256)", poolLockedvotesSUM));
   }
 
   function withdrawVotes() public Only_trusted_trigers {
