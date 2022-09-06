@@ -275,9 +275,9 @@ contract CoreBridge_multipool is Ownable, Initializable {
     }
   }
 
-  function callEVM(address addr, bytes calldata data) internal Only_trusted_trigers {
-    crossSpaceCall.callEVM(bytes20(addr), data);
-  }
+  // function callEVM(address addr, bytes calldata data) internal Only_trusted_trigers {
+  //   crossSpaceCall.callEVM(bytes20(addr), data);
+  // }
 
   fallback() external payable {}
   receive() external payable {}
