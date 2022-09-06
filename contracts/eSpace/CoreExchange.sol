@@ -23,7 +23,11 @@ contract CoreExchange is Ownable, Initializable {
   address xCFXeSpaceAddr; //espace address
   address CoreExchangeeSpaceaddr; //espace address
   address bridgeeSpacesideaddr; //espace address
-  address bridgeCoresideaddr; //espace address
+  address bridgeCoresideaddr; //Core address
+  address xCFXCoreAddr; //Core address
+
+  uint256 CFX_COUNT_OF_ONE_VOTE = 1000;
+  uint256 CFX_VALUE_OF_ONE_VOTE = 1000 ether;
   //--------------------------------------Modifiers-----------------------------------------------
   // modifier Only_trusted_trigers() {
   //   require(trusted_node_trigers[msg.sender]==true,'trigers must be trusted');
@@ -44,28 +48,30 @@ contract CoreExchange is Ownable, Initializable {
   //  function XCFX_burn(uint256 _amount) public virtual onlyRegisted returns(uint256);
   //  function getback_CFX(uint256 _amount) public virtual onlyRegisted ;
   function CFX_exchange_estim(uint256 _amount) public view returns(uint256){
-    return staticCallEVM(eSpaceroomAddr, abi.encodeWithSignature("CFX_exchange_estim(uint256 _amount)", _amount));
+    bytes memory rawdatas = crossSpaceCall.staticCallEVM(bytes20(eSpaceroomAddr), abi.encodeWithSignature("CFX_exchange_estim(uint256 _amount)", _amount));
+    uint256 estimReturn = abi.decode(rawdatas, (uint256));
+    return estimReturn;
   }
   function CFX_exchange_XCFX() external payable returns(uint256){
-    uint256 xCFXAmount = abi.decode(crossSpaceCall.callEVM {value: msg.value}
-           (bytes20(eSpaceroomAddr), abi.encodeWithSignature("CFX_exchange_XCFX()")), (uint256));
-    callEVM(xCFXeSpace, abi.encodeWithSignature("approve(address spender,uint256 amount)"), (CoreExchangeeSpaceaddr,xCFXAmount)) ;
-    callEVM(bridgeeSpacesideaddr, abi.encodeWithSignature("lockToken(address _token,address _cfxAccount,uint256 _amount)"), 
-                                                                       (xCFXeSpaceAddr,msg.sender,xCFXAmount)) ;
-    IERC20crosstoCore(bridgeCoresideaddr).crossFromEvm(xCFXeSpaceAddr, CoreExchangeeSpaceaddr, _amount);
+    bytes memory rawdatas = crossSpaceCall.callEVM{value: msg.value}(bytes20(eSpaceroomAddr), abi.encodeWithSignature("CFX_exchange_XCFX()"));
+    uint256 xCFXAmount = abi.decode(rawdatas, (uint256));
+    crossSpaceCall.callEVM(bytes20(xCFXeSpaceAddr), abi.encodeWithSignature("approve(address spender,uint256 amount)", CoreExchangeeSpaceaddr,xCFXAmount)) ;
+    crossSpaceCall.callEVM(bytes20(bridgeeSpacesideaddr), abi.encodeWithSignature("lockToken(address _token,address _cfxAccount,uint256 _amount)", 
+                                                                       xCFXeSpaceAddr,CoreExchangeeSpaceaddr,xCFXAmount)) ;
+    IERC20crosstoCore(bridgeCoresideaddr).crossFromEvm(xCFXeSpaceAddr, CoreExchangeeSpaceaddr, xCFXAmount);
     return xCFXAmount;
   }
 
 
   //--------------------------------------internal-----------------------------------------------
-  function callEVM(address addr, bytes calldata data) internal {
-    crossSpaceCall.callEVM(bytes20(addr), data);
-  }
-  function staticCallEVM(address addr, bytes calldata data) internal view  returns (uint256){
-    bytes20 rawdatas = crossSpaceCall.staticCallEVM(bytes20(addr), data);
-    uint256 outputdata = abi.decode(rawFirstUnstakeVotes, (uint256));
-    return outputdata;
-  }
+  // function callEVM(address addr, bytes20 data) internal {
+  //   crossSpaceCall.callEVM(bytes20(addr), data);
+  // }
+  // function staticCallEVM(address addr, bytes20 data) internal view  returns (uint256){
+  //   bytes20 rawdatas = crossSpaceCall.staticCallEVM(bytes20(addr), data);
+  //   uint256 outputdata = abi.decode(rawdatas, (uint256));
+  //   return outputdata;
+  // }
 
   fallback() external payable {}
   receive() external payable {}
