@@ -28,9 +28,9 @@ contract CoreBridge_multipool is Ownable, Initializable {
   address   public xCFXAddress;               // xCFX addr in espace 
   address   public eSpaceExroomAddress;       //Exchange room Address in espace
   address   public bridgeeSpaceAddress;       //address of bridge in espace
+  address   public ServicetreasuryAddress;    //Service treasury Address in espace
   //Core Space address
   address   public CoreExroomAddress;         //Exchange room Address in core
-  address   public ServicetreasuryAddress;    //Service treasury Address in core
   uint256   public systemCFXInterestsTemp; //pools cfx interests in temporary
   //
   //uint256   public identifier;                //Execution number , should be private when use in main net
@@ -101,6 +101,10 @@ contract CoreBridge_multipool is Ownable, Initializable {
   function _seteSpacebridgeAddress(address _bridgeeSpaceAddress) public onlyOwner {
     bridgeeSpaceAddress = _bridgeeSpaceAddress;
   }
+  function _seteServicetreasuryAddress(address _ServicetreasuryAddress) public onlyOwner {
+    ServicetreasuryAddress = _ServicetreasuryAddress;
+  }
+  
   function _settrustedtrigers(address _Address,bool state) public onlyOwner {
     trusted_node_trigers[_Address] = state;
   }
@@ -180,7 +184,9 @@ contract CoreBridge_multipool is Ownable, Initializable {
     uint256 toxCFX = systemCFXInterestsTemp;
     systemCFXInterestsTemp = 0;
     if(toxCFX>0){
-      crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
+      bytes memory rawxCFX = crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
+      uint256 xCFXminted =  abi.decode(rawxCFX, (uint256));
+      crossSpaceCall.callEVM(bytes20(xCFXAddress), abi.encodeWithSignature("transfer(address recipient, uint256 amount)",ServicetreasuryAddress,xCFXminted ));
     }
     
     bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridgeeSpaceAddress));
