@@ -176,17 +176,21 @@ contract CoreBridge_multipool is Ownable, Initializable {
     //require(systemCFXInterestsTemp > 0,"interests in all pool is zero");
     return systemCFXInterestsTemp;
   }
-  function campounds() public Only_trusted_trigers  returns(uint256){
+  function campounds() public Only_trusted_trigers  returns(uint256, uint256){
     require(identifier==0,"identifier is not right, need be 0");
     identifier=1;
-    // if(systemCFXInterestsTemp==0){return 0;}
-    //require(systemCFXInterestsTemp!=0,'system_cfxinterests is cleaned');
+
     uint256 toxCFX = systemCFXInterestsTemp;
+    uint256 xCFXminted;
     systemCFXInterestsTemp = 0;
     if(toxCFX>0){
-      bytes memory rawxCFX = crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
-      uint256 xCFXminted =  abi.decode(rawxCFX, (uint256));
-      crossSpaceCall.callEVM(bytes20(xCFXAddress), abi.encodeWithSignature("transfer(address recipient, uint256 amount)",ServicetreasuryAddress,xCFXminted ));
+      bytes memory rawxCFX = 
+      crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
+      xCFXminted =  abi.decode(rawxCFX, (uint256));
+      // crossSpaceCall.callEVM(bytes20(xCFXAddress), abi.encodeWithSignature("transfer(address recipient, uint256 amount)", 
+      //                                                                               ServicetreasuryAddress,xCFXminted ));   //cant work
+      // crossSpaceCall.callEVM(bytes20(systembridgeevmaddr), abi.encodeWithSignature("burn(address _token,address _evmAccount,address _cfxAccount,uint256 _amount)",
+      //                                                                                    xCFXAddress, bridgeeSpaceAddress,address(this), xCFXminted));  //cant work
     }
     
     bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridgeeSpaceAddress));
@@ -196,7 +200,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
     if (votePower > 0){
       IExchange(poolAddress[PosIDinuse]).increaseStake{value: votePower*CFX_VALUE_OF_ONE_VOTE}(votePower);
     }
-    return votePower;
+    return (xCFXminted, votePower);
   }
 
   function SyncValue() public Only_trusted_trigers returns(uint256){
@@ -223,7 +227,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
     return xCFXvalues;
   }
   uint256 Unstakebalanceinbridge;
-  function handleUnstake() public Only_trusted_trigers {
+  function handleUnstake() public Only_trusted_trigers  returns(uint256, uint256,uint256){
     //require(identifier==4,"identifier is not right, need be 4");
     uint256 unstakeLen = queryUnstakeLen();
     if (unstakeLen == 0) return;
@@ -257,9 +261,10 @@ contract CoreBridge_multipool is Ownable, Initializable {
         poolLockedvotesSUM += IExchange(poolAddress[i]).poolSummary().locked;
     }
     crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setlockedvotes(uint256)", poolLockedvotesSUM));
+    return (unstakeLen,Unstakebalanceinbridge,poolLockedvotesSUM);
   }
 
-  function withdrawVotes() public Only_trusted_trigers {
+  function withdrawVotes() public Only_trusted_trigers returns(uint256, uint256){
     //require(identifier==5,"identifier is not right, need be 5");
     uint256 pool_sum = poolAddress.length;
     IExchange posPool;
@@ -279,6 +284,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
         // crossSpaceCall.callEVM{value: transferValue}(ePoolAddrB20(), abi.encodeWithSignature("handleUnlockedIncrease(uint256)", userSummary.unlocked));
       }
     }
+    return (temp_unlocked,transferValue);
   }
 
   // function callEVM(address addr, bytes calldata data) internal Only_trusted_trigers {
@@ -288,6 +294,14 @@ contract CoreBridge_multipool is Ownable, Initializable {
   fallback() external payable {}
   receive() external payable {}
   uint256 identifier;
+  address systembridgeevmaddr;
+  address systembridgecoreaddr;
+  function _setsystembridgeevmaddr(address _Address) public onlyOwner {
+    systembridgeevmaddr = _Address;
+  }
+  function _setsystembridgecoreaddr(address _Address) public onlyOwner {
+    systembridgecoreaddr = _Address;
+  }
   //--------------------------------------temp-----------------------------------------------
    //function identifier_test(uint256 _identifier) public onlyOwner {identifier=_identifier; }
    //function systemCFXInterestsTemp_set(uint256 _i) public onlyOwner {systemCFXInterestsTemp=_i; }
