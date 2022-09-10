@@ -203,41 +203,42 @@ contract CoreBridge_multipool is Ownable, Initializable {
     return (xCFXminted, votePower);
   }
 
-  function SyncValue() public Only_trusted_trigers returns(uint256){
+  function SyncValue() public Only_trusted_trigers returns(uint256, uint256,uint256){
     require(identifier==1,"identifier is not right, need be 1");
     identifier=0;
-    
+    bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridgeeSpaceAddress));
+    uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
     bytes memory rawsum = crossSpaceCall.callEVM(bytes20(xCFXAddress), abi.encodeWithSignature("totalSupply()"));
     uint256 sum = abi.decode(rawsum, (uint256));
-    uint256 balanceinbridge =  address(this).balance;
+    uint256 balanceinbridge = balanceinpool + address(this).balance; //crossSpaceCall.mappedBalance(bridgeeSpaceAddress)
     uint256 pool_sum = poolAddress.length;
     uint256 poolvotes_sum;
     //uint256 poolLockedvotesSUM;
     for(uint256 i=0;i<pool_sum;i++)
     {
-        poolvotes_sum += IExchange(poolAddress[i]).poolSummary().totalvotes
-                      +  IExchange(poolAddress[i]).poolSummary().unlocking
-                      +  IExchange(poolAddress[i]).poolSummary().unlocked;
+        poolvotes_sum += IExchange(poolAddress[i]).poolSummary().totalvotes;
+                      // +  IExchange(poolAddress[i]).poolSummary().unlocking
+                      // +  IExchange(poolAddress[i]).poolSummary().unlocked;
         //poolLockedvotesSUM += IExchange(poolAddress[i]).poolSummary().locked;
     }
-    uint256 xCFXvalues =((balanceinbridge+poolvotes_sum.mul(CFX_VALUE_OF_ONE_VOTE)) * 1 ether ).div(sum);
+    uint256 xCFXvalues =((balanceinbridge + poolvotes_sum.mul(CFX_VALUE_OF_ONE_VOTE) - Unstakebalanceinbridge) * 1 ether).div(sum);
     crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setxCFXValue(uint256)", xCFXvalues));
     crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("handlexCFXadd()"));
     //crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setlockedvotes(uint256)", poolLockedvotesSUM));
-    return xCFXvalues;
+    return (balanceinbridge,poolvotes_sum,xCFXvalues);
   }
   uint256 Unstakebalanceinbridge;
   function handleUnstake() public Only_trusted_trigers  returns(uint256, uint256,uint256){
     //require(identifier==4,"identifier is not right, need be 4");
     uint256 unstakeLen = queryUnstakeLen();
-    if (unstakeLen == 0) return;
+    if (unstakeLen == 0) return (0,Unstakebalanceinbridge,0);
     if (unstakeLen > 5000) unstakeLen = 5000; // max 1000 unstakes per call
     IExchange posPool = IExchange(poolAddress[PosIDinuse]);
     IExchange.PoolSummary memory poolSummary = posPool.poolSummary();
     uint256 available = poolSummary.totalvotes.mul(CFX_VALUE_OF_ONE_VOTE);
     bytes memory rawFirstUnstakeVotes ;
     uint256 firstUnstakeVotes;
-    if (available == 0) return;
+    if (available == 0) return (0,Unstakebalanceinbridge,0);
     for(uint256 i = 0; i < unstakeLen; i++) {
       rawFirstUnstakeVotes = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("firstUnstakeVotes()"));
       firstUnstakeVotes = abi.decode(rawFirstUnstakeVotes, (uint256));
