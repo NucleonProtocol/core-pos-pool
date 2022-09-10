@@ -1,4 +1,7 @@
 //SPDX-License-Identifier: BUSL-1.1
+// Licensor:            X-Dao.
+// Licensed Work:       NUCLEON 1.0
+
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -240,9 +243,6 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   // /// @notice Query pools contract address
   // /// @return Pool's PoS address
   // ///
-  // function posAddress() public view onlyRegisted returns (bytes32) {
-  //   return _posAddressToIdentifier(address(this));
-  // }
 
   function getInQueue() public view returns (VotePowerQueue.QueueNode[] memory) {
     return Inqueues.queueItems();
@@ -299,8 +299,5 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   // ======================== contract base methods =====================
   fallback() external payable {}
   receive() external payable {}
-
-  //---------------------------test methods,dele when used----------------
-  // function register_test(bool _mode) public onlyOwner {_poolRegisted=_mode; }
 
 }

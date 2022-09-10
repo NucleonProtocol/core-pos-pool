@@ -1,4 +1,7 @@
 //SPDX-License-Identifier: BUSL-1.1
+// Licensor:            X-Dao.
+// Licensed Work:       NUCLEON 1.0
+
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -22,18 +25,21 @@ contract CoreBridge_multipool is Ownable, Initializable {
   uint256 CFX_COUNT_OF_ONE_VOTE = 1000;
   uint256 CFX_VALUE_OF_ONE_VOTE = 1000 ether;
 
-  address[] public poolAddress;               // can use many pools, so here is an array
-  uint256   public PosIDinuse;             // pos pool in use
+  address[] public poolAddress;               //can use many pools, so here is an array
+  uint256   public PosIDinuse;                //pos pool in use
   //eSpace address
-  address   public xCFXAddress;               // xCFX addr in espace 
+  address   public xCFXAddress;               //xCFX addr in espace 
   address   public eSpaceExroomAddress;       //Exchange room Address in espace
   address   public bridgeeSpaceAddress;       //address of bridge in espace
   address   public ServicetreasuryAddress;    //Service treasury Address in espace
   //Core Space address
   address   public CoreExroomAddress;         //Exchange room Address in core
-  uint256   public systemCFXInterestsTemp; //pools cfx interests in temporary
+  uint256   public systemCFXInterestsTemp;    //pools cfx interests in temporary
+
+  uint256 Unstakebalanceinbridge;             //Unstaked balance
+  uint256 identifier;                         //compound and update order identifier
   //
-  //uint256   public identifier;                //Execution number , should be private when use in main net
+  //uint256   public identifier;              //Execution number , should be private when use in main net
   mapping(address=>bool) trusted_node_trigers;//     
   // ======================== Struct definitions =========================
   struct PoolSummary {
@@ -46,18 +52,13 @@ contract CoreBridge_multipool is Ownable, Initializable {
   constructor () {
     initialize();
   }
-  // ======================== Modifiers =========================
+  // ============================ Modifiers ===============================
 
-  // modifier Only_in_order() {
-  //   identifier += 1;
-  //   _;
-  //   if(identifier==5) identifier = 0;
-  // }
   modifier Only_trusted_trigers() {
     require(trusted_node_trigers[msg.sender]==true,'trigers must be trusted');
     _;
   }
-  // ======================== Methods for core pos pools settings =========================
+  // ================== Methods for core pos pools settings ===============
 
   function initialize() public initializer{
     crossSpaceCall = CrossSpaceCall(0x0888000000000000000000000000000000000006);
@@ -109,13 +110,6 @@ contract CoreBridge_multipool is Ownable, Initializable {
     trusted_node_trigers[_Address] = state;
   }
 
-  function gettrigerstate(address _Address) public view returns(bool){
-    return trusted_node_trigers[_Address];
-  }
-  function getPoolAddress() public view returns (address[] memory ) {
-    return poolAddress;
-  }
-
   /// @param count Vote cfx count, unit is cfx
   function _setCfxCountOfOneVote(uint256 count) public onlyOwner {
     CFX_COUNT_OF_ONE_VOTE = count;
@@ -126,8 +120,14 @@ contract CoreBridge_multipool is Ownable, Initializable {
     require(ratio > 0 && ratio <= RATIO_BASE, "ratio should be 1-10000");
     poolUserShareRatio = ratio;
   }
+  function gettrigerstate(address _Address) public view returns(bool){
+    return trusted_node_trigers[_Address];
+  }
+  function getPoolAddress() public view returns (address[] memory ) {
+    return poolAddress;
+  }
 
-  //-----------------espace method-------------------------------------------------------------------------------------
+  //------------------------espace method---------------------------------
 
   function queryespacexCFXincrease() public returns (uint256) {
     bytes memory rawCrossingVotes = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("crossingVotes()"));
@@ -139,26 +139,23 @@ contract CoreBridge_multipool is Ownable, Initializable {
     return abi.decode(rawUnstakeLen, (uint256));
   }
 
-  //-----------------core pool method-------------------------------------------------------------------------------------
+  //-------------------core pool method------------------------------------
   function queryInterest(uint256 _num) public view returns (uint256) {
     IExchange posPool = IExchange(poolAddress[_num]);
     uint256 interest = posPool.temp_Interest();
     return interest;
   }
 
-  //-----------------bridge method-------------------------------------------------------------------------------------
+  //---------------------bridge method-------------------------------------
   function syncALLwork() public Only_trusted_trigers {
     claimInterests();
-
     campounds();
     SyncValue();
-
     handleUnstake();
     withdrawVotes();
   }
 
   function claimInterests() public Only_trusted_trigers returns(uint256){
-    //require(identifier==1,"identifier is not right, need be 1");
     require(systemCFXInterestsTemp==0,'system_cfxinterests not cleaned');
     uint256 pool_sum = poolAddress.length;
     IExchange posPool;
@@ -173,9 +170,9 @@ contract CoreBridge_multipool is Ownable, Initializable {
       }
     }
     systemCFXInterestsTemp = interest.mul(RATIO_BASE-poolUserShareRatio).div(RATIO_BASE);
-    //require(systemCFXInterestsTemp > 0,"interests in all pool is zero");
     return systemCFXInterestsTemp;
   }
+  
   function campounds() public Only_trusted_trigers  returns(uint256, uint256){
     require(identifier==0,"identifier is not right, need be 0");
     identifier=1;
@@ -187,10 +184,6 @@ contract CoreBridge_multipool is Ownable, Initializable {
       bytes memory rawxCFX = crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), 
                                             abi.encodeWithSignature("handleCFXexchangeXCFX()"));
       xCFXminted =  abi.decode(rawxCFX, (uint256));
-      // crossSpaceCall.callEVM(bytes20(xCFXAddress), abi.encodeWithSignature("transfer(address recipient, uint256 amount)", 
-      //                                                                               ServicetreasuryAddress,xCFXminted ));   //cant work
-      // crossSpaceCall.callEVM(bytes20(systembridgeevmaddr), abi.encodeWithSignature("burn(address _token,address _evmAccount,address _cfxAccount,uint256 _amount)",
-      //                                                                                    xCFXAddress, bridgeeSpaceAddress,address(this), xCFXminted));  //cant work
     }
     
     bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridgeeSpaceAddress));
@@ -213,23 +206,18 @@ contract CoreBridge_multipool is Ownable, Initializable {
     uint256 balanceinbridge = balanceinpool + address(this).balance; //crossSpaceCall.mappedBalance(bridgeeSpaceAddress)
     uint256 pool_sum = poolAddress.length;
     uint256 poolvotes_sum;
-    //uint256 poolLockedvotesSUM;
     for(uint256 i=0;i<pool_sum;i++)
     {
         poolvotes_sum += IExchange(poolAddress[i]).poolSummary().totalvotes;
-                      // +  IExchange(poolAddress[i]).poolSummary().unlocking
-                      // +  IExchange(poolAddress[i]).poolSummary().unlocked;
-        //poolLockedvotesSUM += IExchange(poolAddress[i]).poolSummary().locked;
     }
     uint256 xCFXvalues =((balanceinbridge + poolvotes_sum.mul(CFX_VALUE_OF_ONE_VOTE) - Unstakebalanceinbridge) * 1 ether).div(sum);
     crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setxCFXValue(uint256)", xCFXvalues));
     crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("handlexCFXadd()"));
-    //crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setlockedvotes(uint256)", poolLockedvotesSUM));
     return (balanceinbridge,poolvotes_sum,xCFXvalues);
   }
-  uint256 Unstakebalanceinbridge;
+
+
   function handleUnstake() public Only_trusted_trigers  returns(uint256, uint256,uint256){
-    //require(identifier==4,"identifier is not right, need be 4");
     uint256 unstakeLen = queryUnstakeLen();
     if (unstakeLen == 0) return (0,Unstakebalanceinbridge,0);
     if (unstakeLen > 5000) unstakeLen = 5000; // max 1000 unstakes per call
@@ -245,10 +233,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
       if (firstUnstakeVotes == 0) break;
       if (firstUnstakeVotes > available) break;
       Unstakebalanceinbridge += firstUnstakeVotes;
-
-      //posPool.decreaseStake(uint64(firstUnstakeVotes));
       crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("handleUnstakeTask()"));
-      //available -= firstUnstakeVotes;
     }
     if(Unstakebalanceinbridge > CFX_VALUE_OF_ONE_VOTE){
       posPool.decreaseStake(uint64(Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE)));
@@ -266,7 +251,6 @@ contract CoreBridge_multipool is Ownable, Initializable {
   }
 
   function withdrawVotes() public Only_trusted_trigers returns(uint256, uint256){
-    //require(identifier==5,"identifier is not right, need be 5");
     uint256 pool_sum = poolAddress.length;
     IExchange posPool;
     uint256 temp_unlocked;
@@ -282,29 +266,23 @@ contract CoreBridge_multipool is Ownable, Initializable {
         // transfer to eSpacePool and call method
         transferValue = temp_unlocked * 1000 ether;
         crossSpaceCall.transferEVM{value: transferValue}(bytes20(eSpaceExroomAddress));
-        // crossSpaceCall.callEVM{value: transferValue}(ePoolAddrB20(), abi.encodeWithSignature("handleUnlockedIncrease(uint256)", userSummary.unlocked));
       }
     }
     return (temp_unlocked,transferValue);
   }
 
-  // function callEVM(address addr, bytes calldata data) internal Only_trusted_trigers {
-  //   crossSpaceCall.callEVM(bytes20(addr), data);
-  // }
-
   fallback() external payable {}
   receive() external payable {}
-  uint256 identifier;
-  address systembridgeevmaddr;
-  address systembridgecoreaddr;
-  function _setsystembridgeevmaddr(address _Address) public onlyOwner {
-    systembridgeevmaddr = _Address;
-  }
-  function _setsystembridgecoreaddr(address _Address) public onlyOwner {
-    systembridgecoreaddr = _Address;
-  }
-  //--------------------------------------temp-----------------------------------------------
-   //function identifier_test(uint256 _identifier) public onlyOwner {identifier=_identifier; }
-   //function systemCFXInterestsTemp_set(uint256 _i) public onlyOwner {systemCFXInterestsTemp=_i; }
+  // function callEVM(address addr, bytes calldata data) internal Only_trusted_trigers {
+  //   crossSpaceCall.callEVM(bytes20(addr), data);
+  // }  
+  // address systembridgeevmaddr;
+  // address systembridgecoreaddr;
+  // function _setsystembridgeevmaddr(address _Address) public onlyOwner {
+  //   systembridgeevmaddr = _Address;
+  // }
+  // function _setsystembridgecoreaddr(address _Address) public onlyOwner {
+  //   systembridgecoreaddr = _Address;
+  // }
   
 }
