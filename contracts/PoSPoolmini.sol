@@ -112,6 +112,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     ONE_DAY_BLOCK_COUNT = 2 * 3600 * 24;
     _poolLockPeriod_in = ONE_DAY_BLOCK_COUNT * 14; 
     _poolLockPeriod_out = ONE_DAY_BLOCK_COUNT * 1 + 12520;
+    poolName = "Nucleon Conflux Pos Pool 01";
   }
   
   ///
