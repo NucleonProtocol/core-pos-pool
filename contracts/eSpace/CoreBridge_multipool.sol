@@ -184,8 +184,8 @@ contract CoreBridge_multipool is Ownable, Initializable {
     uint256 xCFXminted;
     systemCFXInterestsTemp = 0;
     if(toxCFX>0){
-      bytes memory rawxCFX = 
-      crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("CFX_exchange_XCFX()"));
+      bytes memory rawxCFX = crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), 
+                                            abi.encodeWithSignature("handleCFXexchangeXCFX()"));
       xCFXminted =  abi.decode(rawxCFX, (uint256));
       // crossSpaceCall.callEVM(bytes20(xCFXAddress), abi.encodeWithSignature("transfer(address recipient, uint256 amount)", 
       //                                                                               ServicetreasuryAddress,xCFXminted ));   //cant work
