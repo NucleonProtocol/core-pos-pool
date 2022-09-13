@@ -138,7 +138,7 @@ contract CoreExchange is Ownable, Initializable {
     uint256 estimReturn = abi.decode(rawdatas, (uint256));
     return estimReturn;
   }
-  function XCFX_burn(uint256 _amount) external Only_after_started returns(uint256,uint256){
+  function XCFX_burn(uint256 _amount) external Only_after_started returns(uint256, uint256){
     IERC20(xCFXCoreAddr).transferFrom(msg.sender, address(this),_amount);
     IERC20crossInCore(bridgeCoresideaddr).withdrawToEvm(xCFXeSpaceAddr, eSpaceroomAddr, _amount);
     bytes memory rawdatas = crossSpaceCall.callEVM(bytes20(storagebridge), abi.encodeWithSignature("handlexCFXburn(uint256 _amount)",_amount));
