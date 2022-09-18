@@ -38,8 +38,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
 
   uint256 Unstakebalanceinbridge;             //Unstaked balance
   uint256 identifier;                         //compound and update order identifier
-  //
-  //uint256   public identifier;              //Execution number , should be private when use in main net
+
   mapping(address=>bool) trusted_node_trigers;//     
   // ======================== Struct definitions =========================
   struct PoolSummary {
@@ -151,7 +150,6 @@ contract CoreBridge_multipool is Ownable, Initializable {
 
   //---------------------bridge method-------------------------------------
   function syncALLwork() public Only_trusted_trigers returns(uint256[11] memory infos){
-    //uint256[11] memory infos;
     infos[0] = claimInterests();
     (infos[1],infos[2]) = campounds();
     (infos[3],infos[4],infos[5]) = handleUnstake();
@@ -283,16 +281,5 @@ contract CoreBridge_multipool is Ownable, Initializable {
 
   fallback() external payable {}
   receive() external payable {}
-  // function callEVM(address addr, bytes calldata data) internal Only_trusted_trigers {
-  //   crossSpaceCall.callEVM(bytes20(addr), data);
-  // }  
-  // address systembridgeevmaddr;
-  // address systembridgecoreaddr;
-  // function _setsystembridgeevmaddr(address _Address) public onlyOwner {
-  //   systembridgeevmaddr = _Address;
-  // }
-  // function _setsystembridgecoreaddr(address _Address) public onlyOwner {
-  //   systembridgecoreaddr = _Address;
-  // }
   
 }
