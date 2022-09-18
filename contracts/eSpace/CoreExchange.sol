@@ -10,12 +10,11 @@ interface IERC20crossInCore{
     function crossFromEvm(address _evmToken, address _evmAccount,uint256 _amount) external;
     function withdrawToEvm(address _evmToken, address _evmAccount,uint256 _amount)  external;
 }
-//import "../IExchange.sol";
 ///
 ///  @title Core Exchange is deployed in core;
 ///  @dev This contract exchange CFX and xCFX in core, 
-///  @dev  
-///  @notice Users can direct use this contract to participate Conflux PoS stake.
+///  @dev This contract use the espace exchangeroom methods to do the work  
+///  @notice Users can use this contract to participate Conflux PoS stake.
 ///
 contract CoreExchange is Ownable, Initializable {
   using SafeMath for uint256;
@@ -218,9 +217,5 @@ contract CoreExchange is Ownable, Initializable {
 
   fallback() external payable {}
   receive() external payable {}
-  uint256 identifier;
-  //--------------------------------------temp-----------------------------------------------
-   //function identifier_test(uint256 _identifier) public onlyOwner {identifier=_identifier; }
-   //function systemCFXInterestsTemp_set(uint256 _i) public onlyOwner {systemCFXInterestsTemp=_i; }
   
 }
