@@ -198,31 +198,31 @@ contract CoreBridge_multipool is Ownable, Initializable {
     return (xCFXminted, votePower);
   }
 
-  function handleUnstakeSingle() public Only_trusted_trigers  returns(uint256,uint256,uint256){
-    require(queryUnstakeLen()>=40);
-    return handleUnstake();
-  }
+  // function handleUnstakeSingle() public Only_trusted_trigers  returns(uint256,uint256,uint256){
+  //   require(queryUnstakeLen()>=40);
+  //   return handleUnstake();
+  // }
 
   function handleUnstake() internal Only_trusted_trigers  returns(uint256,uint256,uint256){
     require(identifier==1,"identifier is not right, need be 1");
     identifier=2;
     uint256 unstakeLen = queryUnstakeLen();
-    if (unstakeLen == 0) return (0,Unstakebalanceinbridge,0);
-    if (unstakeLen > 40) unstakeLen = 40; // max 40 unstakes per call
+    // if (unstakeLen == 0) return (0,Unstakebalanceinbridge,0);
+    // if (unstakeLen > 40) unstakeLen = 40; // max 40 unstakes per call
     IExchange posPool = IExchange(poolAddress[PosIDinuse]);
     IExchange.PoolSummary memory poolSummary = posPool.poolSummary();
     uint256 available = poolSummary.totalvotes.mul(CFX_VALUE_OF_ONE_VOTE);
     bytes memory rawFirstUnstakeVotes ;
     uint256 firstUnstakeVotes;
     if (available == 0) return (0,Unstakebalanceinbridge,0);
-    for(uint256 i = 0; i < unstakeLen; i++) {
-      rawFirstUnstakeVotes = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("firstUnstakeVotes()"));
-      firstUnstakeVotes = abi.decode(rawFirstUnstakeVotes, (uint256));
-      if (firstUnstakeVotes == 0) break;
-      if (firstUnstakeVotes > available) break;
-      Unstakebalanceinbridge += firstUnstakeVotes;
-      crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("handleUnstakeTask()"));
-    }
+    
+    rawFirstUnstakeVotes = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("handleUnstake()"));
+    firstUnstakeVotes = abi.decode(rawFirstUnstakeVotes, (uint256));
+    if (firstUnstakeVotes == 0) return (0,0,0);
+    if (firstUnstakeVotes > available) return (0,0,0);
+    Unstakebalanceinbridge += firstUnstakeVotes;
+    crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("handleAllUnstakeTask()"));
+
     if(Unstakebalanceinbridge > CFX_VALUE_OF_ONE_VOTE){
       posPool.decreaseStake(uint64(Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE)));
       available -= Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE);
