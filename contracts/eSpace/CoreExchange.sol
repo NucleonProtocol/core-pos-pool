@@ -22,13 +22,13 @@ contract CoreExchange is Ownable, Initializable {
   uint256 private constant ONE_DAY_BLOCK_COUNT = 3600 * 24 * 2;
 
   CrossSpaceCall internal crossSpaceCall;
-  address eSpaceroomAddr; //espace address
-  address xCFXeSpaceAddr; //espace address
+  address eSpaceroomAddr;         //espace address
+  address xCFXeSpaceAddr;         //espace address
   address CoreExchangeeSpaceaddr; //espace address
-  address bridgeeSpacesideaddr; //espace address
-  address bridgeCoresideaddr; //Core address
-  address xCFXCoreAddr; //Core address
-  address storagebridge; //espace address
+  address bridgeeSpacesideaddr;   //espace address
+  address bridgeCoresideaddr;     //Core address
+  address xCFXCoreAddr;           //Core address
+  address storagebridge;          //espace address
   bool started;
 
   uint256 public _poolLockPeriod_slow = ONE_DAY_BLOCK_COUNT * 15;
@@ -78,8 +78,6 @@ contract CoreExchange is Ownable, Initializable {
     crossSpaceCall = CrossSpaceCall(0x0888000000000000000000000000000000000006);
     _poolLockPeriod_slow = ONE_DAY_BLOCK_COUNT * 15;
     _poolLockPeriod_fast = ONE_DAY_BLOCK_COUNT * 2;
-    _poolLockPeriod_slow = ONE_DAY_BLOCK_COUNT * 15;
-    _poolLockPeriod_fast = ONE_DAY_BLOCK_COUNT * 2;
     poolName = "UNCLEON HUB Core";
   }
 
@@ -109,7 +107,6 @@ contract CoreExchange is Ownable, Initializable {
         xCFXCoreAddr = _xCFXCoreAddr;
   }
   
-
   //--------------------------------------functions-----------------------------------------------
   //  function CFX_exchange_estim(uint256 _amount) public view returns(uint256);
   //  function CFX_exchange_XCFX() external payable returns(uint256)   return xcfx_exchange;
@@ -117,7 +114,6 @@ contract CoreExchange is Ownable, Initializable {
   //  function XCFX_burn(uint256 _amount) public virtual onlyRegisted returns(uint256);
   //  function getback_CFX(uint256 _amount) public virtual onlyRegisted ;
   function CFX_exchange_estim(uint256 _amount) public view returns(uint256){
-    
     bytes memory rawdatas = crossSpaceCall.staticCallEVM(bytes20(eSpaceroomAddr), abi.encodeWithSignature("CFX_exchange_estim(uint256 _amount)", _amount));
     uint256 estimReturn = abi.decode(rawdatas, (uint256));
     return estimReturn;
