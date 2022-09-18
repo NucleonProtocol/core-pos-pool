@@ -204,17 +204,6 @@ contract CoreExchange is Ownable, Initializable {
     return userOutqueues[account].queueItems();
   }
 
-
-  //--------------------------------------internal-----------------------------------------------
-  // function callEVM(address addr, bytes20 data) internal {
-  //   crossSpaceCall.callEVM(bytes20(addr), data);
-  // }
-  // function staticCallEVM(address addr, bytes20 data) internal view  returns (uint256){
-  //   bytes20 rawdatas = crossSpaceCall.staticCallEVM(bytes20(addr), data);
-  //   uint256 outputdata = abi.decode(rawdatas, (uint256));
-  //   return outputdata;
-  // }
-
   fallback() external payable {}
   receive() external payable {}
   
