@@ -14,8 +14,8 @@ import "./PoolAPY.sol";
 
 ///
 ///  @title PoSPoolmini is a small Conflux POS pool cantract with the basic usages 
-///  @dev This is Conflux PoS pool contract, the contract didn't have user
-///  @notice Users can use this contract to participate Conflux PoS without running a PoS node.
+///  @dev This is Conflux PoS pool contract, the contract only be used by the bridge
+///  @notice bridge use this contract to participate Conflux PoS.
 ///
 contract PoSPoolmini is PoolContext, Ownable, Initializable {
   using SafeMath for uint256;
@@ -202,7 +202,6 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   ///
   function withdrawStake() public onlyRegisted onlybridge{
     uint256 temp_out_cEndVotes = Outqueues.collectEndedVotes();
-    //require(temp_out_cEndVotes>0,"No new unlocked");
     _poolSummary.unlocking -= temp_out_cEndVotes;
     _poolSummary.unlocked += temp_out_cEndVotes;
     require(_poolSummary.unlocked >= 0, "Unlocked is not enough");
@@ -239,11 +238,6 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     summary.totalInterest = summary.totalInterest.add(_latestReward);
     return summary;
   }
-
-  // /// 
-  // /// @notice Query pools contract address
-  // /// @return Pool's PoS address
-  // ///
 
   function getInQueue() public view returns (VotePowerQueue.QueueNode[] memory) {
     return Inqueues.queueItems();
