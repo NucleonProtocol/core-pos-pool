@@ -158,12 +158,14 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     _stakingDeposit(msg.value);
     _posRegisterIncreaseStake(votePower);
     emit IncreasePoSStake(msg.sender, votePower);
-
+    uint256 tempvotes;
     // update pool info
     _poolSummary.totalvotes += votePower;
     _poolSummary.locking += votePower;
     Inqueues.enqueue(VotePowerQueue.QueueNode(votePower, _blockNumber() + _poolLockPeriod_in));
-    _poolSummary.locked += Inqueues.collectEndedVotes();
+    tempvotes = Outqueues.collectEndedVotes();
+    _poolSummary.unlocking -= tempvotes;
+    _poolSummary.unlocked += tempvotes;
     _updatePoolShot();
   }
 
