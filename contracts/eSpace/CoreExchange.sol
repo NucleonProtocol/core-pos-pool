@@ -176,6 +176,21 @@ contract CoreExchange is Ownable, Initializable {
     address payable receiver = payable(msg.sender);
     receiver.transfer(_amount);
   }
+  function getback_CFX1(uint256 _amount) public virtual Only_after_started {
+    uint256 temp_amount = userOutqueues[msg.sender].collectEndedVotes();
+    // userSummaries[msg.sender].unlocked += temp_amount;
+    // userSummaries[msg.sender].unlocking -= temp_amount;
+    // _exchangeSummary.totalxcfxs = IERC20(xCFXCoreAddr).totalSupply();
+    // _exchangeSummary.unlockingCFX -= _amount;
+    // require(userSummaries[msg.sender].unlocked>=_amount,'_amount exceed available');
+    crossSpaceCall.callEVM(bytes20(storagebridge), abi.encodeWithSignature("handlegetbackCFX(uint256 _amount)",_amount));
+    
+  }
+  function getback_CFX2(uint256 _amount) public virtual Only_after_started {
+    crossSpaceCall.withdrawFromMapped(_amount);
+    address payable receiver = payable(msg.sender);
+    receiver.transfer(_amount);
+  }
 
   // 
   // @notice Get user's pool summary
