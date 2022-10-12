@@ -152,7 +152,8 @@ contract CoreBridge_multipool is Ownable, Initializable {
   function syncALLwork() public Only_trusted_trigers returns(uint256[11] memory infos){
     infos[0] = claimInterests();
     (infos[1],infos[2]) = campounds();
-    (infos[3],infos[4],infos[5]) = handleUnstake();
+    (infos[3],infos[4]) = handleUnstake();
+    infos[5] = handleLockedvotesSUM();
     (infos[6],infos[7],infos[8]) = SyncValue();
     (infos[9],infos[10]) = withdrawVotes();
     return infos;
@@ -203,7 +204,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
   //   return handleUnstake();
   // }
 
-  function handleUnstake() internal Only_trusted_trigers  returns(uint256,uint256,uint256){
+  function handleUnstake() internal Only_trusted_trigers  returns(uint256,uint256){
     require(identifier==1,"identifier is not right, need be 1");
     identifier=2;
     uint256 unstakeLen = queryUnstakeLen();
@@ -214,12 +215,12 @@ contract CoreBridge_multipool is Ownable, Initializable {
     uint256 available = poolSummary.totalvotes.mul(CFX_VALUE_OF_ONE_VOTE);
     bytes memory rawFirstUnstakeVotes ;
     uint256 firstUnstakeVotes;
-    if (available == 0) return (0,Unstakebalanceinbridge,0);
+    if (available == 0) return (0,Unstakebalanceinbridge);
     
     rawFirstUnstakeVotes = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("handleUnstake()"));
     firstUnstakeVotes = abi.decode(rawFirstUnstakeVotes, (uint256));
-    if (firstUnstakeVotes == 0) return (0,0,0);
-    if (firstUnstakeVotes > available) return (0,0,0);
+    if (firstUnstakeVotes == 0) return (0,0);
+    if (firstUnstakeVotes > available) return (0,0);
     Unstakebalanceinbridge += firstUnstakeVotes;
     crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("handleAllUnstakeTask()"));
 
@@ -228,6 +229,17 @@ contract CoreBridge_multipool is Ownable, Initializable {
       available -= Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE);
       Unstakebalanceinbridge -= Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE).mul(CFX_VALUE_OF_ONE_VOTE);
     }
+    // uint256 pool_sum = poolAddress.length;
+    // uint256 poolLockedvotesSUM;
+    // for(uint256 i=0;i<pool_sum;i++)
+    // {
+    //     poolLockedvotesSUM += IExchange(poolAddress[i]).poolSummary().locked;
+    // }
+    // crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setlockedvotes(uint256)", poolLockedvotesSUM));
+    return (unstakeLen,Unstakebalanceinbridge);
+  }
+
+  function handleLockedvotesSUM() internal Only_trusted_trigers  returns(uint256){
     uint256 pool_sum = poolAddress.length;
     uint256 poolLockedvotesSUM;
     for(uint256 i=0;i<pool_sum;i++)
@@ -235,7 +247,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
         poolLockedvotesSUM += IExchange(poolAddress[i]).poolSummary().locked;
     }
     crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setlockedvotes(uint256)", poolLockedvotesSUM));
-    return (unstakeLen,Unstakebalanceinbridge,poolLockedvotesSUM);
+    return poolLockedvotesSUM;
   }
 
   function SyncValue() internal Only_trusted_trigers returns(uint256,uint256,uint256){
