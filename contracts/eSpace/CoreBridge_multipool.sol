@@ -77,6 +77,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
         if(poolAddress[i]==_oldpoolAddress)
         {
             poolAddress[i]=_newpoolAddress;
+            break;
         }
     }
   }
@@ -88,6 +89,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
         {
             poolAddress[i]= poolAddress[pool_sum-1];
             poolAddress.pop();
+            break;
         }
     }
   }
@@ -172,7 +174,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
         allinterest += posPool.claimAllInterest(); 
       }
     }
-    systemCFXInterestsTemp += interest.mul(RATIO_BASE-poolUserShareRatio).div(RATIO_BASE);
+    systemCFXInterestsTemp += allinterest.mul(RATIO_BASE-poolUserShareRatio).div(RATIO_BASE);
     return systemCFXInterestsTemp;
   }
   
