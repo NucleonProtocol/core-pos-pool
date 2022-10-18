@@ -206,7 +206,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     uint256 temp_out_cEndVotes = Outqueues.collectEndedVotes();
     _poolSummary.unlocking -= temp_out_cEndVotes;
     _poolSummary.unlocked += temp_out_cEndVotes;
-    require(_poolSummary.unlocked >= 0, "Unlocked is not enough");
+    // require(_poolSummary.unlocked >= 0, "Unlocked is not enough");
 
     _stakingWithdraw(_poolSummary.unlocked * CFX_VALUE_OF_ONE_VOTE);
     address payable receiver = payable(bridge_withdraw);// withdraw CFX to bridgecoreaddr
