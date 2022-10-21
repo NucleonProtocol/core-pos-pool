@@ -2,7 +2,7 @@
 // Licensor:            X-Dao.
 // Licensed Work:       NUCLEON 1.0
 
-pragma solidity ^0.8.0;
+pragma solidity 0.8.2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
@@ -10,7 +10,6 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "./PoolContext.sol";
 import "./VotePowerQueue.sol";
-import "./PoolAPY.sol";
 
 ///
 ///  @title PoSPoolmini is a small Conflux POS pool cantract with the basic usages 
@@ -21,7 +20,6 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   using SafeMath for uint256;
   using EnumerableSet for EnumerableSet.AddressSet;
   using VotePowerQueue for VotePowerQueue.InOutQueue;
-  using PoolAPY for PoolAPY.ApyQueue;
 
   uint256 private CFX_COUNT_OF_ONE_VOTE = 1000;
   uint256 private CFX_VALUE_OF_ONE_VOTE = 1000 ether;
@@ -32,14 +30,14 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   string public poolName;
   // wheter this poolContract registed in PoS
   bool public _poolRegisted;
-  // ratio shared by user: 1-10000
+
   address bridge_contract;
   address bridge_withdraw;
   address bridge_storage;
 
-  // lock period: 13 days + 1 day
+  // lock period: 14 days + 1 day + 25520
   uint256 public _poolLockPeriod_in = ONE_DAY_BLOCK_COUNT * 14; 
-  uint256 public _poolLockPeriod_out = ONE_DAY_BLOCK_COUNT * 1 + 12520; 
+  uint256 public _poolLockPeriod_out = ONE_DAY_BLOCK_COUNT * 1 + 25520; 
 
   // ======================== Struct definitions =========================
 
@@ -73,6 +71,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   PoolSummary private _poolSummary;
   VotePowerQueue.InOutQueue private Inqueues;
   VotePowerQueue.InOutQueue private Outqueues;
+  VotePowerQueue.InOutQueue private OutqueuesFast;
 
   PoolShot internal lastPoolShot;
 
@@ -91,7 +90,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   function _updatePoolShot() private {
     lastPoolShot.available = _poolSummary.totalvotes;
     lastPoolShot.balance = _selfBalance();
-    lastPoolShot.blockNumber = _blockNumber();
+    lastPoolShot.blockNumber = block.number;
   }
 
   // ======================== Events ==============================
@@ -104,6 +103,17 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
 
   event ClaimInterest(address indexed user, uint256 amount);
 
+  event Setbridges(address indexed user, address bridgeaddr, address withdrawaddr, address storageAddr);
+
+  event SetLockPeriod(address indexed user, uint256 inPeriod,uint256 outPeriod);
+
+  event SetPoolName(address indexed user, string name);
+
+  event SetCfxCountOfOneVote(address indexed user, uint256 count);
+
+  event ReStake(address indexed user, uint64 votePower);
+
+  event ClaimAllInterest(address indexed user, uint256 claimableInterest);
   // ======================== Init methods =========================
   // call this method when depoly the 1967 proxy contract
   function initialize() public initializer {
@@ -141,7 +151,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     // update pool info
     _poolSummary.totalvotes += votePower;
     _poolSummary.locking += votePower;
-    Inqueues.enqueue(VotePowerQueue.QueueNode(votePower, _blockNumber() + _poolLockPeriod_in));
+    Inqueues.enqueue(VotePowerQueue.QueueNode(votePower, block.number + _poolLockPeriod_in));
     _poolSummary.locked += Inqueues.collectEndedVotes();
     _updatePoolShot();
   }
@@ -155,18 +165,18 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   function increaseStake(uint64 votePower) public virtual payable onlyRegisted onlybridge{
     require(votePower > 0, "Minimal votePower is 1");
     require(msg.value == votePower * CFX_VALUE_OF_ONE_VOTE, "msg.value should be votePower * 1000 ether");
-    _stakingDeposit(msg.value);
-    _posRegisterIncreaseStake(votePower);
-    emit IncreasePoSStake(msg.sender, votePower);
-    uint256 tempvotes;
+    collectStateFinishedVotes();
+    require(Inqueues.queueLength()<1000,"TOO long Inqueues!");
     // update pool info
     _poolSummary.totalvotes += votePower;
     _poolSummary.locking += votePower;
-    Inqueues.enqueue(VotePowerQueue.QueueNode(votePower, _blockNumber() + _poolLockPeriod_in));
-    tempvotes = Outqueues.collectEndedVotes();
-    _poolSummary.unlocking -= tempvotes;
-    _poolSummary.unlocked += tempvotes;
+    Inqueues.enqueue(VotePowerQueue.QueueNode(votePower, block.number + _poolLockPeriod_in));
+    collectStateFinishedVotes();
     _updatePoolShot();
+
+    _stakingDeposit(msg.value);
+    _posRegisterIncreaseStake(votePower);
+    emit IncreasePoSStake(msg.sender, votePower);
   }
 
   ///
@@ -175,27 +185,25 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   ///
   function decreaseStake(uint64 votePower) public virtual onlyRegisted onlybridge{
     uint256 tempvotes;
-    _poolSummary.locked += Inqueues.collectEndedVotes();
+    collectStateFinishedVotes();
     require(_poolSummary.totalvotes >= votePower, "Votes is not enough");
-    _posRegisterRetire(votePower);
-    emit DecreasePoSStake(msg.sender, votePower);
-
+    require(Outqueues.queueLength()+OutqueuesFast.queueLength()<1000,"TOO long queues!");
     // update pool info
     _poolSummary.totalvotes -= votePower;
     _poolSummary.unlocking += votePower;
     if(votePower<=_poolSummary.locked){
       _poolSummary.locked -= votePower;
-      Outqueues.enqueue(VotePowerQueue.QueueNode(votePower, _blockNumber() + _poolLockPeriod_out));
+      OutqueuesFast.enqueue(VotePowerQueue.QueueNode(votePower, block.number + _poolLockPeriod_out));
     }else {
       tempvotes = votePower - _poolSummary.locked;
       _poolSummary.locked = 0;
       _poolSummary.locking -= tempvotes;
-      Outqueues.enqueue(VotePowerQueue.QueueNode(votePower, _blockNumber() + _poolLockPeriod_in + _poolLockPeriod_out));
+      Outqueues.enqueue(VotePowerQueue.QueueNode(votePower, block.number + _poolLockPeriod_in + _poolLockPeriod_out));
     }
-    tempvotes = Outqueues.collectEndedVotes();
-    _poolSummary.unlocking -= tempvotes;
-    _poolSummary.unlocked += tempvotes;
+    
     _updatePoolShot();
+    _posRegisterRetire(votePower);
+    emit DecreasePoSStake(msg.sender, votePower);
   }
 
   ///
@@ -203,31 +211,38 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   /// @dev  The number of vote power to withdraw
   ///
   function withdrawStake() public onlyRegisted onlybridge{
-    uint256 temp_out_cEndVotes = Outqueues.collectEndedVotes();
-    _poolSummary.unlocking -= temp_out_cEndVotes;
-    _poolSummary.unlocked += temp_out_cEndVotes;
-    // require(_poolSummary.unlocked >= 0, "Unlocked is not enough");
+    collectStateFinishedVotes();
+    uint256 temp_unlocked = _poolSummary.unlocked;
 
-    _stakingWithdraw(_poolSummary.unlocked * CFX_VALUE_OF_ONE_VOTE);
-    address payable receiver = payable(bridge_withdraw);// withdraw CFX to bridgecoreaddr
-    receiver.transfer(_poolSummary.unlocked * CFX_VALUE_OF_ONE_VOTE);
     _poolSummary.unlocked = 0;
-    emit WithdrawStake(msg.sender, temp_out_cEndVotes);
+
+    _stakingWithdraw(temp_unlocked * CFX_VALUE_OF_ONE_VOTE);
+    address payable receiver = payable(bridge_withdraw);// withdraw CFX to bridgecoreaddr
+    receiver.transfer(temp_unlocked * CFX_VALUE_OF_ONE_VOTE);
+    emit WithdrawStake(msg.sender, temp_unlocked);
   }
 
   ///
   /// @notice Claim all interest in pool
   ///
   function claimAllInterest() public onlyRegisted onlybridge returns (uint256){
+    collectStateFinishedVotes();
     uint claimableInterest = _selfBalance();
     require(claimableInterest > 0, "No claimable interest");
     address payable receiver = payable(bridge_storage);
     receiver.transfer(claimableInterest);
+    emit ClaimAllInterest(msg.sender, claimableInterest);
     return claimableInterest;
   }
 
-  function temp_Interest() public view onlyRegisted returns (uint256){
+  function temp_Interest() public view returns (uint256){
     return _selfBalance() ;
+  }
+  function collectStateFinishedVotes() public {
+    _poolSummary.locked += Inqueues.collectEndedVotes();
+    uint256 tempvotes = Outqueues.collectEndedVotes()+OutqueuesFast.collectEndedVotes();
+    _poolSummary.unlocking -= tempvotes;
+    _poolSummary.unlocked += tempvotes;
   }
   // ======================== Contract view methods interface use =========================
   /// 
@@ -248,30 +263,33 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   function getOutQueue() public view returns (VotePowerQueue.QueueNode[] memory) {
     return Outqueues.queueItems();
   }
+  function getOutQueueFast() public view returns (VotePowerQueue.QueueNode[] memory) {
+    return OutqueuesFast.queueItems();
+  }
 
   // ======================== admin methods =====================
 
   ///
   /// @notice Enable admin to set the user share ratio
   /// @dev description
-  /// @param _withdraw  description
-  /// @param _storage description
   ///
-  function _set_bridges(address _bridge, address _withdraw, address _storage) public onlyOwner {
-    bridge_contract = _bridge;
-    bridge_withdraw = _withdraw;
-    bridge_storage = _storage;
+  function _setbridges(address bridgeaddr, address withdrawaddr, address storageaddr) public onlyOwner {
+    bridge_contract = bridgeaddr;
+    bridge_withdraw = withdrawaddr;
+    bridge_storage = storageaddr;
+    emit Setbridges(msg.sender, bridgeaddr, withdrawaddr, storageaddr);
   }
 
   /// 
   /// @notice Enable admin to set the lock and unlock period
   /// @dev Only admin can do this
-  /// @param _in The lock period in in block number, default is seven day's block count
-  /// @param _out The lock period out in block number, default is seven day's block count
+  /// @param inPeriod The lock period in in block number, default is seven day's block count
+  /// @param outPeriod The lock period out in block number, default is seven day's block count
   ///
-  function _setLockPeriod(uint64 _in,uint64 _out) public onlyOwner {
-    _poolLockPeriod_in = _in;
-    _poolLockPeriod_out = _out;
+  function _setLockPeriod(uint64 inPeriod,uint64 outPeriod) public onlyOwner {
+    _poolLockPeriod_in = inPeriod;
+    _poolLockPeriod_out = outPeriod;
+    emit SetLockPeriod(msg.sender, inPeriod, outPeriod);
   }
 
   /// 
@@ -279,18 +297,21 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   ///
   function _setPoolName(string memory name) public onlyOwner {
     poolName = name;
+    emit SetPoolName(msg.sender, poolName);
   }
 
   /// @param count Vote cfx count, unit is cfx
   function _setCfxCountOfOneVote(uint256 count) public onlyOwner {
     CFX_COUNT_OF_ONE_VOTE = count;
     CFX_VALUE_OF_ONE_VOTE = count * 1 ether;
+    emit SetCfxCountOfOneVote(msg.sender, count);
   }
 
   // Used to bring account's retired votes back to work
   // reStake _poolSummary.available
   function _reStake(uint64 votePower) public onlyOwner {
     _posRegisterIncreaseStake(votePower);
+    emit ReStake(msg.sender, votePower);
   }
 
   // ======================== contract base methods =====================

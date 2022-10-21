@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.0;
+pragma solidity 0.8.2;
 
 library VotePowerQueue {
 
@@ -22,6 +22,10 @@ library VotePowerQueue {
     QueueNode memory item = queue.items[queue.start];
     delete queue.items[queue.start++];
     return item;
+  }
+
+  function queueLength(InOutQueue storage q) internal view returns (uint256 length) {
+    return  q.end-q.start;
   }
 
   function queueItems(InOutQueue storage q) internal view returns (QueueNode[] memory) {
@@ -74,11 +78,11 @@ library VotePowerQueue {
     return total;
   }
 
-  function clear(InOutQueue storage q) internal {
-    for (uint256 i = q.start; i < q.end; i++) {
-      delete q.items[i];
-    }
-    q.start = q.end;
-  }
+  // function clear(InOutQueue storage q) internal {
+  //   for (uint256 i = q.start; i < q.end; i++) {
+  //     delete q.items[i];
+  //   }
+  //   q.start = q.end;
+  // }
   
 }

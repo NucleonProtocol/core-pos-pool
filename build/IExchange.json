@@ -437,7 +437,7 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.2+commit.661d1103\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"_poolLockPeriod\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"claimAllInterest\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"claimInterest\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"votePower\",\"type\":\"uint64\"}],\"name\":\"decreaseStake\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"votePower\",\"type\":\"uint64\"}],\"name\":\"increaseStake\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"poolAPY\",\"outputs\":[{\"internalType\":\"uint32\",\"name\":\"\",\"type\":\"uint32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"poolName\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"poolSummary\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"totalvotes\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"locking\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"locked\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"unlocking\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"unlocked\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalInterest\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"claimedInterest\",\"type\":\"uint256\"}],\"internalType\":\"struct IExchange.PoolSummary\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"poolUserShareRatio\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"posAddress\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"votePower\",\"type\":\"uint64\"}],\"name\":\"reStake\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"indentifier\",\"type\":\"bytes32\"},{\"internalType\":\"uint64\",\"name\":\"votePower\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"blsPubKey\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"vrfPubKey\",\"type\":\"bytes\"},{\"internalType\":\"bytes[2]\",\"name\":\"blsPubKeyProof\",\"type\":\"bytes[2]\"}],\"name\":\"register\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"period\",\"type\":\"uint64\"}],\"name\":\"setLockPeriod\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"}],\"name\":\"setPoolName\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint32\",\"name\":\"ratio\",\"type\":\"uint32\"}],\"name\":\"setPoolUserShareRatio\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_cfxvalue\",\"type\":\"uint256\"}],\"name\":\"setxCFXValue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"temp_Interest\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"uint64\",\"name\":\"offset\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"limit\",\"type\":\"uint64\"}],\"name\":\"userInQueue\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"votePower\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endBlock\",\"type\":\"uint256\"}],\"internalType\":\"struct VotePowerQueue.QueueNode[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"userInQueue\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"votePower\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endBlock\",\"type\":\"uint256\"}],\"internalType\":\"struct VotePowerQueue.QueueNode[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"userOutQueue\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"votePower\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endBlock\",\"type\":\"uint256\"}],\"internalType\":\"struct VotePowerQueue.QueueNode[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"uint64\",\"name\":\"offset\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"limit\",\"type\":\"uint64\"}],\"name\":\"userOutQueue\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"votePower\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endBlock\",\"type\":\"uint256\"}],\"internalType\":\"struct VotePowerQueue.QueueNode[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawStake\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/C/Users/artii/Conflux Studio/minpos/contracts/IExchange.sol\":\"IExchange\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/C/Users/artii/Conflux Studio/minpos/contracts/IExchange.sol\":{\"keccak256\":\"0x93e4894faa008960de620a0b9601dfa18a302f93e79880fe97e6c475449bb529\",\"license\":\"Unlicense\",\"urls\":[\"bzz-raw://112600162132f67d2d9c3d16eeb698ed3d8d0a3626a28ecb494d53f1e6a34e58\",\"dweb:/ipfs/QmS5mqH4rEq45h4XDpYHSxLnfPxwy8T5vMoNb493tbsSzF\"]},\"/C/Users/artii/Conflux Studio/minpos/contracts/VotePowerQueue.sol\":{\"keccak256\":\"0x33067c04b47bc09173eea2ce01eca4b9c600a7ba8cb880d60f55cbcb29c2f159\",\"license\":\"Unlicense\",\"urls\":[\"bzz-raw://fcc4d574d061a032035cbdb98ecb0795e553d916a20bdfd68dabe9cd513527ac\",\"dweb:/ipfs/QmNg7xTWkpNp1ev4JZxCeDQxgBPgasSoKVpxnngcu7GKTS\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.2+commit.661d1103\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"_poolLockPeriod\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"claimAllInterest\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"claimInterest\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"votePower\",\"type\":\"uint64\"}],\"name\":\"decreaseStake\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"votePower\",\"type\":\"uint64\"}],\"name\":\"increaseStake\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"poolAPY\",\"outputs\":[{\"internalType\":\"uint32\",\"name\":\"\",\"type\":\"uint32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"poolName\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"poolSummary\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"totalvotes\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"locking\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"locked\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"unlocking\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"unlocked\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalInterest\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"claimedInterest\",\"type\":\"uint256\"}],\"internalType\":\"struct IExchange.PoolSummary\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"poolUserShareRatio\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"posAddress\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"votePower\",\"type\":\"uint64\"}],\"name\":\"reStake\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"indentifier\",\"type\":\"bytes32\"},{\"internalType\":\"uint64\",\"name\":\"votePower\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"blsPubKey\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"vrfPubKey\",\"type\":\"bytes\"},{\"internalType\":\"bytes[2]\",\"name\":\"blsPubKeyProof\",\"type\":\"bytes[2]\"}],\"name\":\"register\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"period\",\"type\":\"uint64\"}],\"name\":\"setLockPeriod\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"}],\"name\":\"setPoolName\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint32\",\"name\":\"ratio\",\"type\":\"uint32\"}],\"name\":\"setPoolUserShareRatio\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_cfxvalue\",\"type\":\"uint256\"}],\"name\":\"setxCFXValue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"temp_Interest\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"uint64\",\"name\":\"offset\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"limit\",\"type\":\"uint64\"}],\"name\":\"userInQueue\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"votePower\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endBlock\",\"type\":\"uint256\"}],\"internalType\":\"struct VotePowerQueue.QueueNode[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"userInQueue\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"votePower\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endBlock\",\"type\":\"uint256\"}],\"internalType\":\"struct VotePowerQueue.QueueNode[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"userOutQueue\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"votePower\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endBlock\",\"type\":\"uint256\"}],\"internalType\":\"struct VotePowerQueue.QueueNode[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"uint64\",\"name\":\"offset\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"limit\",\"type\":\"uint64\"}],\"name\":\"userOutQueue\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"votePower\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endBlock\",\"type\":\"uint256\"}],\"internalType\":\"struct VotePowerQueue.QueueNode[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawStake\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/C/Users/artii/Conflux Studio/minpos/contracts/IExchange.sol\":\"IExchange\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/C/Users/artii/Conflux Studio/minpos/contracts/IExchange.sol\":{\"keccak256\":\"0x93e4894faa008960de620a0b9601dfa18a302f93e79880fe97e6c475449bb529\",\"license\":\"Unlicense\",\"urls\":[\"bzz-raw://112600162132f67d2d9c3d16eeb698ed3d8d0a3626a28ecb494d53f1e6a34e58\",\"dweb:/ipfs/QmS5mqH4rEq45h4XDpYHSxLnfPxwy8T5vMoNb493tbsSzF\"]},\"/C/Users/artii/Conflux Studio/minpos/contracts/VotePowerQueue.sol\":{\"keccak256\":\"0x1a758f168d0b1068c902386d0b8470cb6614215c5e1021b39977d28c14ed3d82\",\"license\":\"Unlicense\",\"urls\":[\"bzz-raw://5eff5d0f2d4e50faf4a49eec1cc9efeedad7efa614004a596a617848d9a69f0f\",\"dweb:/ipfs/QmeXLHAtW5Y6oR32KVVawqwQ4sSJ2Z3iG8RTMyyr75MAMP\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
@@ -454,7 +454,7 @@
         262
       ],
       "VotePowerQueue": [
-        873
+        1601
       ]
     },
     "id": 263,
@@ -479,7 +479,7 @@
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
         "scope": 263,
-        "sourceUnit": 874,
+        "sourceUnit": 1602,
         "src": "65:30:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1899,7 +1899,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_memory_ptr_$dyn_memory_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_memory_ptr_$dyn_memory_ptr",
                     "typeString": "struct VotePowerQueue.QueueNode[]"
                   },
                   "typeName": {
@@ -1910,13 +1910,13 @@
                         "id": 214,
                         "name": "VotePowerQueue.QueueNode",
                         "nodeType": "IdentifierPath",
-                        "referencedDeclaration": 532,
+                        "referencedDeclaration": 1279,
                         "src": "2217:24:1"
                       },
-                      "referencedDeclaration": 532,
+                      "referencedDeclaration": 1279,
                       "src": "2217:24:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_QueueNode_$532_storage_ptr",
+                        "typeIdentifier": "t_struct$_QueueNode_$1279_storage_ptr",
                         "typeString": "struct VotePowerQueue.QueueNode"
                       }
                     },
@@ -1924,7 +1924,7 @@
                     "nodeType": "ArrayTypeName",
                     "src": "2217:26:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_storage_$dyn_storage_ptr",
                       "typeString": "struct VotePowerQueue.QueueNode[]"
                     }
                   },
@@ -1999,7 +1999,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_memory_ptr_$dyn_memory_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_memory_ptr_$dyn_memory_ptr",
                     "typeString": "struct VotePowerQueue.QueueNode[]"
                   },
                   "typeName": {
@@ -2010,13 +2010,13 @@
                         "id": 223,
                         "name": "VotePowerQueue.QueueNode",
                         "nodeType": "IdentifierPath",
-                        "referencedDeclaration": 532,
+                        "referencedDeclaration": 1279,
                         "src": "2318:24:1"
                       },
-                      "referencedDeclaration": 532,
+                      "referencedDeclaration": 1279,
                       "src": "2318:24:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_QueueNode_$532_storage_ptr",
+                        "typeIdentifier": "t_struct$_QueueNode_$1279_storage_ptr",
                         "typeString": "struct VotePowerQueue.QueueNode"
                       }
                     },
@@ -2024,7 +2024,7 @@
                     "nodeType": "ArrayTypeName",
                     "src": "2318:26:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_storage_$dyn_storage_ptr",
                       "typeString": "struct VotePowerQueue.QueueNode[]"
                     }
                   },
@@ -2153,7 +2153,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_memory_ptr_$dyn_memory_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_memory_ptr_$dyn_memory_ptr",
                     "typeString": "struct VotePowerQueue.QueueNode[]"
                   },
                   "typeName": {
@@ -2164,13 +2164,13 @@
                         "id": 236,
                         "name": "VotePowerQueue.QueueNode",
                         "nodeType": "IdentifierPath",
-                        "referencedDeclaration": 532,
+                        "referencedDeclaration": 1279,
                         "src": "2447:24:1"
                       },
-                      "referencedDeclaration": 532,
+                      "referencedDeclaration": 1279,
                       "src": "2447:24:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_QueueNode_$532_storage_ptr",
+                        "typeIdentifier": "t_struct$_QueueNode_$1279_storage_ptr",
                         "typeString": "struct VotePowerQueue.QueueNode"
                       }
                     },
@@ -2178,7 +2178,7 @@
                     "nodeType": "ArrayTypeName",
                     "src": "2447:26:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_storage_$dyn_storage_ptr",
                       "typeString": "struct VotePowerQueue.QueueNode[]"
                     }
                   },
@@ -2307,7 +2307,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_memory_ptr_$dyn_memory_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_memory_ptr_$dyn_memory_ptr",
                     "typeString": "struct VotePowerQueue.QueueNode[]"
                   },
                   "typeName": {
@@ -2318,13 +2318,13 @@
                         "id": 249,
                         "name": "VotePowerQueue.QueueNode",
                         "nodeType": "IdentifierPath",
-                        "referencedDeclaration": 532,
+                        "referencedDeclaration": 1279,
                         "src": "2577:24:1"
                       },
-                      "referencedDeclaration": 532,
+                      "referencedDeclaration": 1279,
                       "src": "2577:24:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_QueueNode_$532_storage_ptr",
+                        "typeIdentifier": "t_struct$_QueueNode_$1279_storage_ptr",
                         "typeString": "struct VotePowerQueue.QueueNode"
                       }
                     },
@@ -2332,7 +2332,7 @@
                     "nodeType": "ArrayTypeName",
                     "src": "2577:26:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_storage_$dyn_storage_ptr",
                       "typeString": "struct VotePowerQueue.QueueNode[]"
                     }
                   },
@@ -2444,7 +2444,7 @@
         262
       ],
       "VotePowerQueue": [
-        873
+        1601
       ]
     },
     "id": 263,
@@ -2469,7 +2469,7 @@
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
         "scope": 263,
-        "sourceUnit": 874,
+        "sourceUnit": 1602,
         "src": "65:30:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3889,7 +3889,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_memory_ptr_$dyn_memory_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_memory_ptr_$dyn_memory_ptr",
                     "typeString": "struct VotePowerQueue.QueueNode[]"
                   },
                   "typeName": {
@@ -3900,13 +3900,13 @@
                         "id": 214,
                         "name": "VotePowerQueue.QueueNode",
                         "nodeType": "IdentifierPath",
-                        "referencedDeclaration": 532,
+                        "referencedDeclaration": 1279,
                         "src": "2217:24:1"
                       },
-                      "referencedDeclaration": 532,
+                      "referencedDeclaration": 1279,
                       "src": "2217:24:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_QueueNode_$532_storage_ptr",
+                        "typeIdentifier": "t_struct$_QueueNode_$1279_storage_ptr",
                         "typeString": "struct VotePowerQueue.QueueNode"
                       }
                     },
@@ -3914,7 +3914,7 @@
                     "nodeType": "ArrayTypeName",
                     "src": "2217:26:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_storage_$dyn_storage_ptr",
                       "typeString": "struct VotePowerQueue.QueueNode[]"
                     }
                   },
@@ -3989,7 +3989,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_memory_ptr_$dyn_memory_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_memory_ptr_$dyn_memory_ptr",
                     "typeString": "struct VotePowerQueue.QueueNode[]"
                   },
                   "typeName": {
@@ -4000,13 +4000,13 @@
                         "id": 223,
                         "name": "VotePowerQueue.QueueNode",
                         "nodeType": "IdentifierPath",
-                        "referencedDeclaration": 532,
+                        "referencedDeclaration": 1279,
                         "src": "2318:24:1"
                       },
-                      "referencedDeclaration": 532,
+                      "referencedDeclaration": 1279,
                       "src": "2318:24:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_QueueNode_$532_storage_ptr",
+                        "typeIdentifier": "t_struct$_QueueNode_$1279_storage_ptr",
                         "typeString": "struct VotePowerQueue.QueueNode"
                       }
                     },
@@ -4014,7 +4014,7 @@
                     "nodeType": "ArrayTypeName",
                     "src": "2318:26:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_storage_$dyn_storage_ptr",
                       "typeString": "struct VotePowerQueue.QueueNode[]"
                     }
                   },
@@ -4143,7 +4143,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_memory_ptr_$dyn_memory_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_memory_ptr_$dyn_memory_ptr",
                     "typeString": "struct VotePowerQueue.QueueNode[]"
                   },
                   "typeName": {
@@ -4154,13 +4154,13 @@
                         "id": 236,
                         "name": "VotePowerQueue.QueueNode",
                         "nodeType": "IdentifierPath",
-                        "referencedDeclaration": 532,
+                        "referencedDeclaration": 1279,
                         "src": "2447:24:1"
                       },
-                      "referencedDeclaration": 532,
+                      "referencedDeclaration": 1279,
                       "src": "2447:24:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_QueueNode_$532_storage_ptr",
+                        "typeIdentifier": "t_struct$_QueueNode_$1279_storage_ptr",
                         "typeString": "struct VotePowerQueue.QueueNode"
                       }
                     },
@@ -4168,7 +4168,7 @@
                     "nodeType": "ArrayTypeName",
                     "src": "2447:26:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_storage_$dyn_storage_ptr",
                       "typeString": "struct VotePowerQueue.QueueNode[]"
                     }
                   },
@@ -4297,7 +4297,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_memory_ptr_$dyn_memory_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_memory_ptr_$dyn_memory_ptr",
                     "typeString": "struct VotePowerQueue.QueueNode[]"
                   },
                   "typeName": {
@@ -4308,13 +4308,13 @@
                         "id": 249,
                         "name": "VotePowerQueue.QueueNode",
                         "nodeType": "IdentifierPath",
-                        "referencedDeclaration": 532,
+                        "referencedDeclaration": 1279,
                         "src": "2577:24:1"
                       },
-                      "referencedDeclaration": 532,
+                      "referencedDeclaration": 1279,
                       "src": "2577:24:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_QueueNode_$532_storage_ptr",
+                        "typeIdentifier": "t_struct$_QueueNode_$1279_storage_ptr",
                         "typeString": "struct VotePowerQueue.QueueNode"
                       }
                     },
@@ -4322,7 +4322,7 @@
                     "nodeType": "ArrayTypeName",
                     "src": "2577:26:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$532_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_QueueNode_$1279_storage_$dyn_storage_ptr",
                       "typeString": "struct VotePowerQueue.QueueNode[]"
                     }
                   },
@@ -4433,7 +4433,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.4",
-  "updatedAt": "2022-09-01T22:33:32.931Z",
+  "updatedAt": "2022-10-21T09:44:26.483Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

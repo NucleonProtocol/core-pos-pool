@@ -2,7 +2,7 @@
 // Licensor:            X-Dao.
 // Licensed Work:       NUCLEON 1.0
 
-pragma solidity ^0.8.0;
+pragma solidity 0.8.2;
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -21,9 +21,9 @@ contract CoreBridge_multipool is Ownable, Initializable {
 
   uint256 private constant RATIO_BASE = 10000;
   // ratio shared by user: 1-10000
-  uint256 public poolUserShareRatio = 9000;
-  uint256 CFX_COUNT_OF_ONE_VOTE = 1000;
-  uint256 CFX_VALUE_OF_ONE_VOTE = 1000 ether;
+  uint256 public poolUserShareRatio;
+  uint256 private CFX_COUNT_OF_ONE_VOTE;
+  uint256 private CFX_VALUE_OF_ONE_VOTE;
 
   address[] public poolAddress;               //can use many pools, so here is an array
   uint256   public PosIDinuse;                //pos pool in use
@@ -36,10 +36,10 @@ contract CoreBridge_multipool is Ownable, Initializable {
   address   public CoreExroomAddress;         //Exchange room Address in core
   uint256   private systemCFXInterestsTemp;    //pools cfx interests in temporary
 
-  uint256 Unstakebalanceinbridge;             //Unstaked balance
-  uint256 identifier;                         //compound and update order identifier
+  uint256 private Unstakebalanceinbridge;             //Unstaked balance
+  uint256 private identifier;                         //compound and update order identifier
 
-  mapping(address=>bool) trusted_node_trigers;//     
+  mapping(address=>bool) private trusted_node_trigers;//     
   // ======================== Struct definitions =========================
   struct PoolSummary {
     uint256 xCFXSUM;             // xCFX SUM (1 ether xCFX === 1 e18)
@@ -48,15 +48,39 @@ contract CoreBridge_multipool is Ownable, Initializable {
     uint256 historical_Interest ;// total historical interest of whole pools
   }
 
-  constructor () {
-    initialize();
-  }
+  // constructor () {
+  //   initialize();
+  // }
   // ============================ Modifiers ===============================
 
   modifier Only_trusted_trigers() {
     require(trusted_node_trigers[msg.sender]==true,'trigers must be trusted');
     _;
   }
+    // ======================== Events ==============================
+
+  event AddPoolAddress(address indexed user, address poolAddress);
+
+  event ChangePoolAddress(address indexed user, address oldpoolAddress,address newpoolAddress);
+
+  event DelePoolAddress(address indexed user, address oldpoolAddress);
+
+  event SeteSpaceExroomAddress(address indexed user, address eSpaceExroomAddr);
+
+  event SeteSpacexCFXAddress(address indexed user, address eSpacexCFXaddr);
+
+  event SeteSpacebridgeAddress(address indexed user, address bridgeeSpaceAddr);
+
+  event SeteServicetreasuryAddress(address indexed user, address servicetreasuryAddress);
+
+  event Settrustedtrigers(address indexed user, address trigersddress,bool state);
+
+  event SetCfxCountOfOneVote(address indexed user, uint256 count);
+
+  event SetPoolUserShareRatio(address indexed user, uint256 ratio);
+
+  event ClearTheStates(address indexed user, uint256 idclear);
+
   // ================== Methods for core pos pools settings ===============
 
   function initialize() public initializer{
@@ -66,60 +90,77 @@ contract CoreBridge_multipool is Ownable, Initializable {
     CFX_VALUE_OF_ONE_VOTE = 1000 ether;
   }
 
-  function _addPoolAddress(address _poolAddress) public onlyOwner {
-    poolAddress.push(_poolAddress);
+  function _addPoolAddress(address poolAddr) public onlyOwner {
+    require(poolAddr!=address(0x0000000000000000000000000000000000000000),'Can not be Zero adress');
+    poolAddress.push(poolAddr);
+    emit AddPoolAddress(msg.sender, poolAddr);
   }
 
-  function _changePoolAddress(address _oldpoolAddress,address _newpoolAddress) public onlyOwner {
-    uint256 pool_sum = poolAddress.length;
-    for(uint256 i=0;i<pool_sum;i++)
+  function _changePoolAddress(address oldpoolAddress,address newpoolAddress) public onlyOwner {
+    require(newpoolAddress!=address(0x0000000000000000000000000000000000000000),'Can not be Zero adress');
+    uint256 poolsum = poolAddress.length;
+    for(uint256 i=0;i<poolsum;i++)
     {
-        if(poolAddress[i]==_oldpoolAddress)
+        if(poolAddress[i]==oldpoolAddress)
         {
-            poolAddress[i]=_newpoolAddress;
+            poolAddress[i]=newpoolAddress;
             break;
         }
     }
+    emit ChangePoolAddress(msg.sender, oldpoolAddress, newpoolAddress);
   }
-  function _delePoolAddress(address _oldpoolAddress) public onlyOwner {
+  function _delePoolAddress(address oldpoolAddress) public onlyOwner {
     uint256 pool_sum = poolAddress.length;
     for(uint256 i=0;i<pool_sum;i++)
     {
-        if(poolAddress[i]==_oldpoolAddress)
+        if(poolAddress[i]==oldpoolAddress)
         {
             poolAddress[i]= poolAddress[pool_sum-1];
             poolAddress.pop();
             break;
         }
     }
+    emit DelePoolAddress(msg.sender, oldpoolAddress);
   }
 
-  function _seteSpaceExroomAddress(address _eSpaceExroomAddress) public onlyOwner {
-    eSpaceExroomAddress = _eSpaceExroomAddress;
+  function _seteSpaceExroomAddress(address eSpaceExroomAddr) public onlyOwner {
+    require(eSpaceExroomAddr!=address(0x0000000000000000000000000000000000000000),'Can not be Zero adress');
+    eSpaceExroomAddress = eSpaceExroomAddr;
+    emit SeteSpaceExroomAddress(msg.sender, eSpaceExroomAddr);
   }
-  function _seteSpacexCFXAddress(address _eSpacexCFXaddr) public onlyOwner {
-    xCFXAddress = _eSpacexCFXaddr;
+  function _seteSpacexCFXAddress(address eSpacexCFXaddr) public onlyOwner {
+    require(eSpacexCFXaddr!=address(0x0000000000000000000000000000000000000000),'Can not be Zero adress');
+    xCFXAddress = eSpacexCFXaddr;
+    emit SeteSpacexCFXAddress(msg.sender, eSpacexCFXaddr);
   }
-  function _seteSpacebridgeAddress(address _bridgeeSpaceAddress) public onlyOwner {
-    bridgeeSpaceAddress = _bridgeeSpaceAddress;
+  function _seteSpacebridgeAddress(address bridgeeSpaceAddr) public onlyOwner {
+    require(bridgeeSpaceAddr!=address(0x0000000000000000000000000000000000000000),'Can not be Zero adress');
+    bridgeeSpaceAddress = bridgeeSpaceAddr;
+    emit SeteSpacebridgeAddress(msg.sender, bridgeeSpaceAddr);
   }
-  function _seteServicetreasuryAddress(address _ServicetreasuryAddress) public onlyOwner {
-    ServicetreasuryAddress = _ServicetreasuryAddress;
+  function _seteServicetreasuryAddress(address servicetreasury) public onlyOwner {
+    require(servicetreasury!=address(0x0000000000000000000000000000000000000000),'Can not be Zero adress');
+    ServicetreasuryAddress = servicetreasury;
+    emit SeteServicetreasuryAddress(msg.sender, servicetreasury);
   }
   
-  function _settrustedtrigers(address _Address,bool state) public onlyOwner {
-    trusted_node_trigers[_Address] = state;
+  function _settrustedtrigers(address trigersddress,bool state) public onlyOwner {
+    require(trigersddress!=address(0x0000000000000000000000000000000000000000),'Can not be Zero adress');
+    trusted_node_trigers[trigersddress] = state;
+    emit Settrustedtrigers(msg.sender, trigersddress, state);
   }
 
   /// @param count Vote cfx count, unit is cfx
   function _setCfxCountOfOneVote(uint256 count) public onlyOwner {
     CFX_COUNT_OF_ONE_VOTE = count;
     CFX_VALUE_OF_ONE_VOTE = count * 1 ether;
+    emit SetCfxCountOfOneVote(msg.sender, CFX_COUNT_OF_ONE_VOTE);
   }
 
-  function _setPoolUserShareRatio(uint64 ratio) public onlyOwner {
+  function _setPoolUserShareRatio(uint256 ratio) public onlyOwner {
     require(ratio > 0 && ratio <= RATIO_BASE, "ratio should be 1-10000");
     poolUserShareRatio = ratio;
+    emit SetPoolUserShareRatio(msg.sender, ratio);
   }
   function gettrigerstate(address _Address) public view returns(bool){
     return trusted_node_trigers[_Address];
@@ -129,6 +170,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
   }
   function _clearTheStates() public onlyOwner {
     identifier = 0;
+    emit ClearTheStates(msg.sender, identifier);
   }
 
   //------------------------espace method---------------------------------
@@ -201,17 +243,11 @@ contract CoreBridge_multipool is Ownable, Initializable {
     return (xCFXminted, votePower);
   }
 
-  // function handleUnstakeSingle() public Only_trusted_trigers  returns(uint256,uint256,uint256){
-  //   require(queryUnstakeLen()>=40);
-  //   return handleUnstake();
-  // }
-
   function handleUnstake() internal Only_trusted_trigers  returns(uint256,uint256){
     require(identifier==1,"identifier is not right, need be 1");
     identifier=2;
     uint256 unstakeLen = queryUnstakeLen();
-    // if (unstakeLen == 0) return (0,Unstakebalanceinbridge,0);
-    // if (unstakeLen > 40) unstakeLen = 40; // max 40 unstakes per call
+
     IExchange posPool = IExchange(poolAddress[PosIDinuse]);
     IExchange.PoolSummary memory poolSummary = posPool.poolSummary();
     uint256 available = poolSummary.totalvotes.mul(CFX_VALUE_OF_ONE_VOTE);
@@ -224,20 +260,13 @@ contract CoreBridge_multipool is Ownable, Initializable {
     if (firstUnstakeVotes == 0) return (0,0);
     if (firstUnstakeVotes > available) return (0,0);
     Unstakebalanceinbridge += firstUnstakeVotes;
-    crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("handleAllUnstakeTask()"));
 
     if(Unstakebalanceinbridge > CFX_VALUE_OF_ONE_VOTE){
-      posPool.decreaseStake(uint64(Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE)));
       available -= Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE);
       Unstakebalanceinbridge -= Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE).mul(CFX_VALUE_OF_ONE_VOTE);
+      posPool.decreaseStake(uint64(Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE)));
     }
-    // uint256 pool_sum = poolAddress.length;
-    // uint256 poolLockedvotesSUM;
-    // for(uint256 i=0;i<pool_sum;i++)
-    // {
-    //     poolLockedvotesSUM += IExchange(poolAddress[i]).poolSummary().locked;
-    // }
-    // crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("setlockedvotes(uint256)", poolLockedvotesSUM));
+
     return (unstakeLen,Unstakebalanceinbridge);
   }
 

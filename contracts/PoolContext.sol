@@ -2,16 +2,16 @@
 import "./mocks/Staking.sol";
 import "./mocks/PoSRegister.sol";
 
-pragma solidity ^0.8.0;
+pragma solidity 0.8.2;
 
 abstract contract PoolContext {
   function _selfBalance() internal view virtual returns (uint256) {
     return address(this).balance;
   }
 
-  function _blockNumber() internal view virtual returns (uint256) {
-    return block.number;
-  }
+  // function _blockNumber() internal view virtual returns (uint256) {
+  //   return block.number;
+  // }
 
   MockStaking private constant STAKING = MockStaking(0x0888000000000000000000000000000000000002);
   MockPoSRegister private constant POS_REGISTER = MockPoSRegister(0x0888000000000000000000000000000000000005);
