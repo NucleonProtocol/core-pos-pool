@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-interface IMockPoSRegister {
+interface IPoSRegister {
   function register(bytes32 indentifier, uint64 votePower, bytes calldata blsPubKey, bytes calldata vrfPubKey, bytes[2] calldata blsPubKeyProof) external payable;
   function increaseStake(uint64 votePower) external;
   function retire(uint64 votePower) external;

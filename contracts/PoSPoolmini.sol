@@ -218,7 +218,9 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
 
     _stakingWithdraw(temp_unlocked * CFX_VALUE_OF_ONE_VOTE);
     address payable receiver = payable(bridge_withdraw);// withdraw CFX to bridgecoreaddr
-    receiver.transfer(temp_unlocked * CFX_VALUE_OF_ONE_VOTE);
+    // receiver.transfer(temp_unlocked * CFX_VALUE_OF_ONE_VOTE);
+    (bool success, ) = receiver.call{value: temp_unlocked * CFX_VALUE_OF_ONE_VOTE}("");
+    require(success,"CFX Transfer Failed");
     emit WithdrawStake(msg.sender, temp_unlocked);
   }
 
@@ -230,7 +232,9 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     uint claimableInterest = _selfBalance();
     require(claimableInterest > 0, "No claimable interest");
     address payable receiver = payable(bridge_storage);
-    receiver.transfer(claimableInterest);
+    (bool success, ) = receiver.call{value: claimableInterest}("");
+    require(success,"CFX Transfer Failed");
+    // receiver.transfer(claimableInterest);
     emit ClaimAllInterest(msg.sender, claimableInterest);
     return claimableInterest;
   }

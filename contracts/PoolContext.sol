@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
-import "./mocks/Staking.sol";
-import "./mocks/PoSRegister.sol";
+import "./internal/IStaking.sol";
+import "./internal/IPoSRegister.sol";
 
 pragma solidity 0.8.2;
 
@@ -9,12 +9,8 @@ abstract contract PoolContext {
     return address(this).balance;
   }
 
-  // function _blockNumber() internal view virtual returns (uint256) {
-  //   return block.number;
-  // }
-
-  MockStaking private constant STAKING = MockStaking(0x0888000000000000000000000000000000000002);
-  MockPoSRegister private constant POS_REGISTER = MockPoSRegister(0x0888000000000000000000000000000000000005);
+  IStaking private constant STAKING = IStaking(0x0888000000000000000000000000000000000002);
+  IPoSRegister private constant POS_REGISTER = IPoSRegister(0x0888000000000000000000000000000000000005);
   
   function _stakingDeposit(uint256 _amount) internal virtual {
     STAKING.deposit(_amount);
