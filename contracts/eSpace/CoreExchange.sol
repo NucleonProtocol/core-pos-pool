@@ -173,8 +173,10 @@ contract CoreExchange is Ownable, Initializable {
     require(userSummaries[msg.sender].unlocked>=_amount,'_amount exceed available');
     crossSpaceCall.callEVM(bytes20(storagebridge), abi.encodeWithSignature("handlegetbackCFX(uint256 _amount)",_amount));
     crossSpaceCall.withdrawFromMapped(_amount);
-    address payable receiver = payable(msg.sender);
-    receiver.transfer(_amount);
+    // address payable receiver = payable(msg.sender);
+    // receiver.transfer(_amount);
+    (bool success, ) = msg.sender.call{value:_amount}("");
+    require(success,"CFX Transfer Failed");
   }
   function getback_CFX1(uint256 _amount) public virtual Only_after_started {
     uint256 temp_amount = userOutqueues[msg.sender].collectEndedVotes();
