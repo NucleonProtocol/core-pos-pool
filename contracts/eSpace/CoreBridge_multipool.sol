@@ -73,7 +73,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
 
   event SeteServicetreasuryAddress(address indexed user, address servicetreasuryAddress);
 
-  event Settrustedtrigers(address indexed user, address trigersddress,bool state);
+  event Settrustedtrigers(address indexed user, address triggersAddress,bool state);
 
   event SetCfxCountOfOneVote(address indexed user, uint256 count);
 
@@ -144,10 +144,10 @@ contract CoreBridge_multipool is Ownable, Initializable {
     emit SeteServicetreasuryAddress(msg.sender, servicetreasury);
   }
   
-  function _settrustedtrigers(address trigersddress,bool state) public onlyOwner {
-    require(trigersddress!=address(0x0000000000000000000000000000000000000000),'Can not be Zero adress');
-    trusted_node_trigers[trigersddress] = state;
-    emit Settrustedtrigers(msg.sender, trigersddress, state);
+  function _settrustedtrigers(address triggersAddress,bool state) public onlyOwner {
+    require(triggersAddress!=address(0x0000000000000000000000000000000000000000),'Can not be Zero adress');
+    trusted_node_trigers[triggersAddress] = state;
+    emit Settrustedtrigers(msg.sender, triggersAddress, state);
   }
 
   /// @param count Vote cfx count, unit is cfx
@@ -180,10 +180,10 @@ contract CoreBridge_multipool is Ownable, Initializable {
     return abi.decode(rawCrossingVotes, (uint256));
   }
 
-  function queryUnstakeLen() public view returns (uint256) {
-    bytes memory rawUnstakeLen = crossSpaceCall.staticCallEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("unstakeLen()"));
-    return abi.decode(rawUnstakeLen, (uint256));
-  }
+  // function queryUnstakeLen() public view returns (uint256) {
+  //   bytes memory rawUnstakeLen = crossSpaceCall.staticCallEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("unstakeLen()"));
+  //   return abi.decode(rawUnstakeLen, (uint256));
+  // }
 
   //-------------------core pool method------------------------------------
   function queryInterest(uint256 _num) internal view returns (uint256) {
@@ -246,7 +246,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
   function handleUnstake() internal Only_trusted_trigers  returns(uint256,uint256){
     require(identifier==1,"identifier is not right, need be 1");
     identifier=2;
-    uint256 unstakeLen = queryUnstakeLen();
+    // uint256 unstakeLen = queryUnstakeLen();
 
     IExchange posPool = IExchange(poolAddress[PosIDinuse]);
     IExchange.PoolSummary memory poolSummary = posPool.poolSummary();
@@ -267,7 +267,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
       posPool.decreaseStake(uint64(Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE)));
     }
 
-    return (unstakeLen,Unstakebalanceinbridge);
+    return (available,Unstakebalanceinbridge);
   }
 
   function handleLockedvotesSUM() internal Only_trusted_trigers  returns(uint256){
