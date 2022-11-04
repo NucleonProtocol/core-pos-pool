@@ -246,25 +246,25 @@ contract CoreBridge_multipool is Ownable, Initializable {
   function handleUnstake() internal Only_trusted_trigers  returns(uint256,uint256){
     require(identifier==1,"identifier is not right, need be 1");
     identifier=2;
-    // uint256 unstakeLen = queryUnstakeLen();
 
     IExchange posPool = IExchange(poolAddress[PosIDinuse]);
     IExchange.PoolSummary memory poolSummary = posPool.poolSummary();
-    uint256 available = poolSummary.totalvotes.mul(CFX_VALUE_OF_ONE_VOTE);
-    bytes memory rawFirstUnstakeVotes ;
-    uint256 firstUnstakeVotes;
+    uint256 available = poolSummary.totalvotes;
     if (available == 0) return (0,Unstakebalanceinbridge);
-    
-    rawFirstUnstakeVotes = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("handleUnstake()"));
-    firstUnstakeVotes = abi.decode(rawFirstUnstakeVotes, (uint256));
-    if (firstUnstakeVotes == 0) return (0,0);
-    if (firstUnstakeVotes > available) return (0,0);
-    Unstakebalanceinbridge += firstUnstakeVotes;
+
+    bytes memory rawUnstakeCFXs ;
+    uint256 receivedUnstakeCFXs;
+    rawUnstakeCFXs = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("handleUnstake()"));
+    receivedUnstakeCFXs = abi.decode(rawUnstakeCFXs, (uint256));
+    if (receivedUnstakeCFXs == 0) return (0,0);
+    require(receivedUnstakeCFXs <= available.mul(CFX_VALUE_OF_ONE_VOTE),'handleUnstake error, receivedUnstakeCFXs > availableCFX in POS');
+    //if (receivedUnstakeCFXs > available) return (0,0);
+    Unstakebalanceinbridge += receivedUnstakeCFXs;
 
     if(Unstakebalanceinbridge > CFX_VALUE_OF_ONE_VOTE){
       available -= Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE);
-      Unstakebalanceinbridge -= Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE).mul(CFX_VALUE_OF_ONE_VOTE);
       posPool.decreaseStake(uint64(Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE)));
+      Unstakebalanceinbridge -= Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE).mul(CFX_VALUE_OF_ONE_VOTE);
     }
 
     return (available,Unstakebalanceinbridge);

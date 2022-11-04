@@ -47,7 +47,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   /// @custom:field locked
   /// @custom:field unlocking votes
   /// @custom:field unlocked votes
-  /// @custom:field totalInterest,total interest of whole pools
+  /// @custom:field unclaimedInterests,total interest of whole pools
   /// @custom:field claimedInterest
 
   struct PoolSummary {
@@ -56,7 +56,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     uint256 locked;
     uint256 unlocking;
     uint256 unlocked;
-    uint256 totalInterest; 
+    uint256 unclaimedInterests; 
     uint256 claimedInterest;
   }
 
@@ -84,14 +84,14 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     require(msg.sender==bridge_contract, "msg.sender is not bridge");
     _;
   }
-  // ======================== Helpers ============================
+  // // ======================== Helpers ============================
 
-  // used to update lastPoolShot after _poolSummary.available changed 
-  function _updatePoolShot() private {
-    lastPoolShot.available = _poolSummary.totalvotes;
-    lastPoolShot.balance = _selfBalance();
-    lastPoolShot.blockNumber = block.number;
-  }
+  // // used to update lastPoolShot after _poolSummary.available changed 
+  // function _updatePoolShot() private {
+  //   lastPoolShot.available = _poolSummary.totalvotes;
+  //   lastPoolShot.balance = _selfBalance();
+  //   lastPoolShot.blockNumber = block.number;
+  // }
 
   // ======================== Events ==============================
 
@@ -153,7 +153,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     _poolSummary.locking += votePower;
     Inqueues.enqueue(VotePowerQueue.QueueNode(votePower, block.number + _poolLockPeriod_in));
     _poolSummary.locked += Inqueues.collectEndedVotes();
-    _updatePoolShot();
+    // _updatePoolShot();
   }
 
   // ======================== Contract methods , Only bridge can use =========================
@@ -172,7 +172,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     _poolSummary.locking += votePower;
     Inqueues.enqueue(VotePowerQueue.QueueNode(votePower, block.number + _poolLockPeriod_in));
     collectStateFinishedVotes();
-    _updatePoolShot();
+    // _updatePoolShot();
 
     _stakingDeposit(msg.value);
     _posRegisterIncreaseStake(votePower);
@@ -201,7 +201,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
       Outqueues.enqueue(VotePowerQueue.QueueNode(votePower, block.number + _poolLockPeriod_in + _poolLockPeriod_out));
     }
     
-    _updatePoolShot();
+    // _updatePoolShot();
     _posRegisterRetire(votePower);
     emit DecreasePoSStake(msg.sender, votePower);
   }
@@ -231,10 +231,10 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     collectStateFinishedVotes();
     uint claimableInterest = _selfBalance();
     require(claimableInterest > 0, "No claimable interest");
+    _poolSummary.claimedInterest += claimableInterest;
     address payable receiver = payable(bridge_storage);
     (bool success, ) = receiver.call{value: claimableInterest}("");
     require(success,"CFX Transfer Failed");
-    // receiver.transfer(claimableInterest);
     emit ClaimAllInterest(msg.sender, claimableInterest);
     return claimableInterest;
   }
@@ -255,8 +255,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   ///
   function poolSummary() public view returns (PoolSummary memory) {
     PoolSummary memory summary = _poolSummary;
-    uint256 _latestReward = _selfBalance().sub(lastPoolShot.balance);
-    summary.totalInterest = summary.totalInterest.add(_latestReward);
+    summary.unclaimedInterests = _selfBalance();
     return summary;
   }
 
