@@ -19,7 +19,7 @@ interface IERC20crossInCore{
 contract CoreExchange is Ownable, Initializable {
   using SafeMath for uint256;
   using VotePowerQueue for VotePowerQueue.InOutQueue;
-  uint256 private constant ONE_DAY_BLOCK_COUNT = 3600 * 24 * 2;
+  uint256 private constant ONE_DAY_BLOCK_COUNT = 3600 * 24 * 2; //172800
 
   CrossSpaceCall internal crossSpaceCall;
   address eSpaceroomAddr;         //espace address
@@ -72,6 +72,32 @@ contract CoreExchange is Ownable, Initializable {
   function _blockNumber() internal view virtual returns (uint256) {
     return block.number;
   }
+    // ======================== Events ====================================
+  
+  event IncreasePoSStake(address indexed user, uint256 votePower);
+
+  event DecreasePoSStake(address indexed user, uint256 votePower);
+
+  event WithdrawStake(address indexed user, uint256 votePower);
+
+  event SetPoolName(address indexed user, string name);
+
+  event SetLockPeriod(address indexed user, uint256 slow, uint256 fast);
+
+  event Setstart(address indexed user);
+
+  event SeteSpaceroomAddr(address indexed user, address eSpaceroomAddr);
+
+  event SetxCFXeSpaceAddr(address indexed user, address xCFXeSpaceAddr);
+
+  event SetstorageBridge(address indexed user, address s_addr);
+
+  event SetXCFXaddr(address indexed user, address xcfx_addr);
+
+  event SetSystemBridgeeSpacesideaddr(address indexed user, address bridgeeSpacesideaddr);
+
+  event SetSystemBridgeCoresideaddr(address indexed user, address bridgeCoresideaddr);
+
   //--------------------------------------settings-----------------------------------------------
   function initialize() public initializer{
     crossSpaceCall = CrossSpaceCall(0x0888000000000000000000000000000000000006);
@@ -79,31 +105,48 @@ contract CoreExchange is Ownable, Initializable {
     _poolLockPeriod_fast = ONE_DAY_BLOCK_COUNT * 2;
     poolName = "UNCLEON HUB Core";
   }
-
-  function _setLockPeriod(uint64 _slow,uint64 _fast) public onlyOwner {
-    _poolLockPeriod_slow = _slow;
-    _poolLockPeriod_fast = _fast;
+  function _setPoolName(string memory name) public onlyOwner {
+    poolName = name;
+    emit SetPoolName(msg.sender, name);
   }
+  function _setLockPeriod() public onlyOwner returns(uint256,uint256){
+    bytes memory rawdatas = crossSpaceCall.staticCallEVM(bytes20(eSpaceroomAddr), abi.encodeWithSignature("getLockPeriod()"));
+    uint256 _slow;
+    uint256 _fast;
+    (_slow, _fast) = abi.decode(rawdatas, (uint256,uint256));
+    _poolLockPeriod_slow = _slow*21/10;
+    _poolLockPeriod_fast = _fast*21/10;
+    emit SetLockPeriod(msg.sender, _poolLockPeriod_slow, _poolLockPeriod_fast);
+    return(_poolLockPeriod_slow,_poolLockPeriod_fast);
+  }
+
   function _setstart() external onlyOwner {
     started = true;
+    emit Setstart(msg.sender);
   }
   function _seteSpaceroomAddr(address _eSpaceroomAddr) external onlyOwner {
-        eSpaceroomAddr = _eSpaceroomAddr;
+    eSpaceroomAddr = _eSpaceroomAddr;
+    emit SeteSpaceroomAddr(msg.sender, eSpaceroomAddr);
   }
   function _setxCFXeSpaceAddr(address _xCFXeSpaceAddr) external onlyOwner {
-        xCFXeSpaceAddr = _xCFXeSpaceAddr;
+    xCFXeSpaceAddr = _xCFXeSpaceAddr;
+    emit SetxCFXeSpaceAddr(msg.sender, xCFXeSpaceAddr);
   } 
   function _setstoragebridgeAddr(address _storagebridgeAddr) external onlyOwner {
-        storagebridge = _storagebridgeAddr;
+    storagebridge = _storagebridgeAddr;
+    emit SetstorageBridge(msg.sender, storagebridge);
   } 
-  function _setbridgeeSpacesideaddr(address _bridgeeSpacesideaddr) external onlyOwner {
-        bridgeeSpacesideaddr = _bridgeeSpacesideaddr;
-  }
-  function _setbridgeCoresideaddr(address _bridgeCoresideaddr) external onlyOwner {
-        bridgeCoresideaddr = _bridgeCoresideaddr;
-  }
   function _setxCFXCoreAddr(address _xCFXCoreAddr) external onlyOwner {
-        xCFXCoreAddr = _xCFXCoreAddr;
+    xCFXCoreAddr = _xCFXCoreAddr;
+    emit  SetXCFXaddr(msg.sender, xCFXCoreAddr);
+  }
+  function _setSystemBridgeeSpacesideAddr(address _bridgeeSpacesideaddr) external onlyOwner {
+    bridgeeSpacesideaddr = _bridgeeSpacesideaddr;
+    emit SetSystemBridgeeSpacesideaddr(msg.sender, bridgeeSpacesideaddr);
+  }
+  function _setSystemBridgeCoresideAddr(address _bridgeCoresideaddr) external onlyOwner {
+    bridgeCoresideaddr = _bridgeCoresideaddr;
+    emit SetSystemBridgeCoresideaddr(msg.sender, bridgeCoresideaddr);
   }
   
   //--------------------------------------functions-----------------------------------------------
@@ -124,16 +167,20 @@ contract CoreExchange is Ownable, Initializable {
     rawdatas = crossSpaceCall.callEVM(bytes20(storagebridge), 
                             abi.encodeWithSignature("handlelock(uint256)", Amount));
     Amount = abi.decode(rawdatas, (uint256));
+    collectOutqueuesFinishedVotes();
     IERC20crossInCore(bridgeCoresideaddr).crossFromEvm(xCFXeSpaceAddr, storagebridge, Amount);
     IERC20(xCFXCoreAddr).transfer(msg.sender, Amount);
     _exchangeSummary.totalxcfxs = IERC20(xCFXCoreAddr).totalSupply();
+    emit IncreasePoSStake(msg.sender, Amount);
     return _exchangeSummary.totalxcfxs;
   }
 
-  function XCFX_burn_estim(uint256 _amount) public view returns(uint256){
-    bytes memory rawdatas = crossSpaceCall.staticCallEVM(bytes20(eSpaceroomAddr), abi.encodeWithSignature("XCFX_burn_estim(uint256)", _amount));
-    uint256 estimReturn = abi.decode(rawdatas, (uint256));
-    return estimReturn;
+  function XCFX_burn_estim(uint256 _amount) public view returns(uint256,uint256){
+    bytes memory rawdatas = crossSpaceCall.staticCallEVM(bytes20(eSpaceroomAddr), abi.encodeWithSignature("XCFX_burn_estim(uint256,uint256)", _amount));
+    uint256 estimReturn1;
+    uint256 estimReturn2;
+    (estimReturn1,estimReturn2) = abi.decode(rawdatas, (uint256,uint256));
+    return (estimReturn1,estimReturn2);
   }
   
   function XCFX_burn(uint256 _amount) external Only_after_started returns(uint256, uint256){
@@ -155,45 +202,23 @@ contract CoreExchange is Ownable, Initializable {
       userOutqueues[msg.sender].enqueue(VotePowerQueue.QueueNode(withdrawCFXs, _blockNumber() + _poolLockPeriod_slow));
       _amount = _blockNumber() + _poolLockPeriod_slow;
     }
-    
     userSummaries[msg.sender].unlocking += withdrawCFXs;
-    
-    uint256 temp_amount = userOutqueues[msg.sender].collectEndedVotes();
-    userSummaries[msg.sender].unlocked += temp_amount;
-    userSummaries[msg.sender].unlocking -= temp_amount;
+    collectOutqueuesFinishedVotes();
+    emit DecreasePoSStake(msg.sender, withdrawCFXs);
     return (withdrawCFXs,withdrawtimes);
   }
 
   function getback_CFX(uint256 _amount) public virtual Only_after_started {
-    uint256 temp_amount = userOutqueues[msg.sender].collectEndedVotes();
-    userSummaries[msg.sender].unlocked += temp_amount;
-    userSummaries[msg.sender].unlocking -= temp_amount;
+    collectOutqueuesFinishedVotes();
     _exchangeSummary.totalxcfxs = IERC20(xCFXCoreAddr).totalSupply();
     _exchangeSummary.unlockingCFX -= _amount;
     require(userSummaries[msg.sender].unlocked>=_amount,'_amount exceed available');
-    crossSpaceCall.callEVM(bytes20(storagebridge), abi.encodeWithSignature("handlegetbackCFX(uint256 _amount)",_amount));
+    userSummaries[msg.sender].unlocked -= _amount;
+    crossSpaceCall.callEVM(bytes20(storagebridge), abi.encodeWithSignature("handlegetbackCFX(uint256)",_amount));
     crossSpaceCall.withdrawFromMapped(_amount);
-    // address payable receiver = payable(msg.sender);
-    // receiver.transfer(_amount);
     (bool success, ) = msg.sender.call{value:_amount}("");
     require(success,"CFX Transfer Failed");
-  }
-  function getback_CFX1(uint256 _amount) public virtual Only_after_started {
-    uint256 temp_amount = userOutqueues[msg.sender].collectEndedVotes();
-    userSummaries[msg.sender].unlocked += temp_amount;
-    userSummaries[msg.sender].unlocking -= temp_amount;
-    // _exchangeSummary.totalxcfxs = IERC20(xCFXCoreAddr).totalSupply();
-    // _exchangeSummary.unlockingCFX -= _amount;
-    // require(userSummaries[msg.sender].unlocked>=_amount,'_amount exceed available');
-    crossSpaceCall.callEVM(bytes20(storagebridge), abi.encodeWithSignature("handlegetbackCFX(uint256 _amount)",_amount));
-    
-  }
-  function getback_CFX2(uint256 _amount) public virtual Only_after_started {
-    crossSpaceCall.withdrawFromMapped(_amount);
-    //address payable receiver = payable(msg.sender);
-    // receiver.transfer(_amount);
-    (bool success, ) = msg.sender.call{value:_amount}("");
-    require(success,"CFX Transfer Failed");
+    emit WithdrawStake(msg.sender, _amount);
   }
 
   // 
@@ -217,6 +242,12 @@ contract CoreExchange is Ownable, Initializable {
   // @dev get the user's OutQueue
   function userOutQueue(address account) public view returns (VotePowerQueue.QueueNode[] memory) {
     return userOutqueues[account].queueItems();
+  }
+
+  function collectOutqueuesFinishedVotes() public {
+    uint256 temp_amount = userOutqueues[msg.sender].collectEndedVotes();
+    userSummaries[msg.sender].unlocked += temp_amount;
+    userSummaries[msg.sender].unlocking -= temp_amount;
   }
 
   fallback() external payable {}
