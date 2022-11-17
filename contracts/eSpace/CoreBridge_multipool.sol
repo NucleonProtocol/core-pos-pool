@@ -175,22 +175,17 @@ contract CoreBridge_multipool is Ownable, Initializable {
 
   //------------------------espace method---------------------------------
 
-  function queryespacexCFXincrease() internal returns (uint256) {
-    bytes memory rawCrossingVotes = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("crossingVotes()"));
-    return abi.decode(rawCrossingVotes, (uint256));
-  }
-
-  // function queryUnstakeLen() public view returns (uint256) {
-  //   bytes memory rawUnstakeLen = crossSpaceCall.staticCallEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("unstakeLen()"));
-  //   return abi.decode(rawUnstakeLen, (uint256));
+  // function queryespacexCFXincrease() internal returns (uint256) {
+  //   bytes memory rawCrossingVotes = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("crossingVotes()"));
+  //   return abi.decode(rawCrossingVotes, (uint256));
   // }
 
   //-------------------core pool method------------------------------------
-  function queryInterest(uint256 _num) internal view returns (uint256) {
-    IExchange posPool = IExchange(poolAddress[_num]);
-    uint256 interest = posPool.temp_Interest();
-    return interest;
-  }
+  // function queryInterest(uint256 _num) internal view returns (uint256) {
+  //   IExchange posPool = IExchange(poolAddress[_num]);
+  //   uint256 interest = posPool.temp_Interest();
+  //   return interest;
+  // }
 
   //---------------------bridge method-------------------------------------
   function syncALLwork() public Only_trusted_trigers returns(uint256[11] memory infos){
@@ -258,7 +253,6 @@ contract CoreBridge_multipool is Ownable, Initializable {
     receivedUnstakeCFXs = abi.decode(rawUnstakeCFXs, (uint256));
     if (receivedUnstakeCFXs == 0) return (0,0);
     require(receivedUnstakeCFXs <= available.mul(CFX_VALUE_OF_ONE_VOTE),'handleUnstake error, receivedUnstakeCFXs > availableCFX in POS');
-    //if (receivedUnstakeCFXs > available) return (0,0);
     Unstakebalanceinbridge += receivedUnstakeCFXs;
 
     if(Unstakebalanceinbridge > CFX_VALUE_OF_ONE_VOTE){

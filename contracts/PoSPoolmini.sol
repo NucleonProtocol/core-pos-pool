@@ -187,7 +187,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     uint256 tempvotes;
     collectStateFinishedVotes();
     require(_poolSummary.totalvotes >= votePower, "Votes is not enough");
-    require(Outqueues.queueLength()+OutqueuesFast.queueLength()<1000,"TOO long queues!");
+    require(Outqueues.queueLength()+OutqueuesFast.queueLength()<500,"TOO long queues!");
     // update pool info
     _poolSummary.totalvotes -= votePower;
     _poolSummary.unlocking += votePower;
@@ -213,7 +213,6 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   function withdrawStake() public onlyRegisted onlybridge{
     collectStateFinishedVotes();
     uint256 temp_unlocked = _poolSummary.unlocked;
-
     _poolSummary.unlocked = 0;
 
     _stakingWithdraw(temp_unlocked * CFX_VALUE_OF_ONE_VOTE);
