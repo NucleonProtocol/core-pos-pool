@@ -7,11 +7,11 @@ project is licensed under the BSL version 1.1. See LICENSE.txt for details. NUCL
 
 - **contracts/PoSPoolmini.sol**: a smart contract to build the mini pos pool;
 
-  test address：cfxtest:acgbrbh3gjwum400d2gwz6etw4fjhzdn4jg5wz9bzh
+  test address：cfxtest:acdyuumakvsxtdysrm455sfzxcc77uvfkumcm252ew
   
 - **contracts/eSpace/CoreBridge_multipool.sol**: a smart contract to bridge the core space and espace;
 
-  test address：cfxtest:achvrggjwz4vuw22kftx0pw5a17wsywh4ycnys1c84
+  test address：cfxtest:acbzh2pjr35e6dft46n68wyex92ky59bx69xgncdmr
   
 
 ## Reference
