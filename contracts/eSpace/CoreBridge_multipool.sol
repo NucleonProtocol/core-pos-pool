@@ -48,9 +48,6 @@ contract CoreBridge_multipool is Ownable, Initializable {
     uint256 historical_Interest ;// total historical interest of whole pools
   }
 
-  // constructor () {
-  //   initialize();
-  // }
   // ============================ Modifiers ===============================
 
   modifier Only_trusted_trigers() {
@@ -83,8 +80,8 @@ contract CoreBridge_multipool is Ownable, Initializable {
 
   // ================== Methods for core pos pools settings ===============
 
-  function initialize() public initializer{
-    crossSpaceCall = CrossSpaceCall(0x0888000000000000000000000000000000000006);
+  function initialize(address crossSpaceCallAddress) public initializer{
+    crossSpaceCall = CrossSpaceCall(crossSpaceCallAddress);
     poolUserShareRatio = 9000;
     CFX_COUNT_OF_ONE_VOTE = 1000;
     CFX_VALUE_OF_ONE_VOTE = 1000 ether;
@@ -173,20 +170,6 @@ contract CoreBridge_multipool is Ownable, Initializable {
     emit ClearTheStates(msg.sender, identifier);
   }
 
-  //------------------------espace method---------------------------------
-
-  // function queryespacexCFXincrease() internal returns (uint256) {
-  //   bytes memory rawCrossingVotes = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("crossingVotes()"));
-  //   return abi.decode(rawCrossingVotes, (uint256));
-  // }
-
-  //-------------------core pool method------------------------------------
-  // function queryInterest(uint256 _num) internal view returns (uint256) {
-  //   IExchange posPool = IExchange(poolAddress[_num]);
-  //   uint256 interest = posPool.temp_Interest();
-  //   return interest;
-  // }
-
   //---------------------bridge method-------------------------------------
   function syncALLwork() public Only_trusted_trigers returns(uint256[11] memory infos){
     infos[0] = claimInterests();
@@ -222,7 +205,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
     uint256 toxCFX = systemCFXInterestsTemp;
     uint256 xCFXminted;
     systemCFXInterestsTemp = 0;
-    if(toxCFX>0){
+    if(toxCFX > 0){
       bytes memory rawxCFX = crossSpaceCall.callEVM{value: toxCFX}(bytes20(eSpaceExroomAddress), 
                                             abi.encodeWithSignature("handleCFXexchangeXCFX()"));
       xCFXminted =  abi.decode(rawxCFX, (uint256));
@@ -230,7 +213,9 @@ contract CoreBridge_multipool is Ownable, Initializable {
     
     bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridgeeSpaceAddress));
     uint256 balanceinpool =  abi.decode(rawbalance, (uint256));
-    crossSpaceCall.withdrawFromMapped(balanceinpool);
+    if(balanceinpool > 0){
+      crossSpaceCall.withdrawFromMapped(balanceinpool);
+    }
     uint64 votePower = uint64(address(this).balance.div(CFX_VALUE_OF_ONE_VOTE));
     if (votePower > 0){
       IExchange(poolAddress[PosIDinuse]).increaseStake{value: votePower*CFX_VALUE_OF_ONE_VOTE}(votePower);
@@ -254,11 +239,12 @@ contract CoreBridge_multipool is Ownable, Initializable {
     if (receivedUnstakeCFXs == 0) return (0,0);
     require(receivedUnstakeCFXs <= available.mul(CFX_VALUE_OF_ONE_VOTE),'handleUnstake error, receivedUnstakeCFXs > availableCFX in POS');
     Unstakebalanceinbridge += receivedUnstakeCFXs;
-
+    uint256 unstakeSubVotes;
     if(Unstakebalanceinbridge > CFX_VALUE_OF_ONE_VOTE){
       available -= Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE);
-      posPool.decreaseStake(uint64(Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE)));
-      Unstakebalanceinbridge -= Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE).mul(CFX_VALUE_OF_ONE_VOTE);
+      unstakeSubVotes = Unstakebalanceinbridge.div(CFX_VALUE_OF_ONE_VOTE);
+      Unstakebalanceinbridge -= unstakeSubVotes.mul(CFX_VALUE_OF_ONE_VOTE);
+      posPool.decreaseStake(uint64(unstakeSubVotes));
     }
 
     return (available,Unstakebalanceinbridge);
