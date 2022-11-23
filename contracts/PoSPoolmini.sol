@@ -134,8 +134,8 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     bytes[2] calldata blsPubKeyProof
   ) public virtual payable onlyOwner {
     require(!_poolRegisted, "Pool is already registed");
-    // require(votePower == 1, "votePower should be 1");
-    require(msg.value == votePower * CFX_VALUE_OF_ONE_VOTE, "msg.value should be 1000 CFX");
+    require(votePower == 1, "votePower should be 1");
+    require(msg.value == CFX_VALUE_OF_ONE_VOTE, "msg.value should be 1000 CFX");
     // update pool info
     _poolRegisted = true;
     _poolSummary.totalvotes += votePower;
