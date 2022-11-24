@@ -155,7 +155,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     require(votePower > 0, "Minimal votePower is 1");
     require(msg.value == votePower * CFX_VALUE_OF_ONE_VOTE, "msg.value should be votePower * 1000 ether");
     collectStateFinishedVotes();
-    require(Inqueues.queueLength()<1000,"TOO long Inqueues!");
+    require(Inqueues.queueLength()<500,"TOO long Inqueues!");
     // update pool info
     _poolSummary.totalvotes += votePower;
     _poolSummary.locking += votePower;
