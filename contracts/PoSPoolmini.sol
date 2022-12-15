@@ -21,9 +21,9 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   using EnumerableSet for EnumerableSet.AddressSet;
   using VotePowerQueue for VotePowerQueue.InOutQueue;
 
-  uint256 private CFX_COUNT_OF_ONE_VOTE = 1000;
-  uint256 private CFX_VALUE_OF_ONE_VOTE = 1000 ether;
-  uint256 private ONE_DAY_BLOCK_COUNT = 2 * 3600 * 24;
+  uint256 public CFX_COUNT_OF_ONE_VOTE;// = 1000;
+  uint256 public CFX_VALUE_OF_ONE_VOTE;// = 1000 ether;
+  uint256 public ONE_DAY_BLOCK_COUNT;// = 2 * 3600 * 24;
   
   // ======================== Pool config =========================
 
@@ -36,8 +36,8 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   address bridge_storage;
 
   // lock period: 14 days + 1 day + 25520
-  uint256 public _poolLockPeriod_in = ONE_DAY_BLOCK_COUNT * 14; 
-  uint256 public _poolLockPeriod_out = ONE_DAY_BLOCK_COUNT * 1 + 25520; 
+  uint256 public _poolLockPeriod_in;//= ONE_DAY_BLOCK_COUNT * 14; 
+  uint256 public _poolLockPeriod_out;// = ONE_DAY_BLOCK_COUNT * 1 + 25520; 
 
   // ======================== Struct definitions =========================
 
