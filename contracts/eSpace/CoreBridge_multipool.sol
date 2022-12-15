@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../ICrossSpaceCall.sol";
 import "../IExchange.sol";
 ///
@@ -15,7 +16,7 @@ import "../IExchange.sol";
 ///  @dev compound the interests
 ///  @notice Users cann't direct use this contract to participate Conflux PoS stake.
 ///
-contract CoreBridge_multipool is Ownable, Initializable {
+contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
   using SafeMath for uint256;
   CrossSpaceCall internal crossSpaceCall;
 
@@ -223,7 +224,7 @@ contract CoreBridge_multipool is Ownable, Initializable {
     return (xCFXminted, votePower);
   }
 
-  function handleUnstake() internal Only_trusted_trigers  returns(uint256,uint256){
+  function handleUnstake() internal Only_trusted_trigers nonReentrant returns(uint256,uint256){
     require(identifier==1,"identifier is not right, need be 1");
     identifier=2;
 
