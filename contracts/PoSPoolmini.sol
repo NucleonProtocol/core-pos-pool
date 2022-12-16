@@ -11,11 +11,9 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "./PoolContext.sol";
 import "./VotePowerQueue.sol";
 
-///
 ///  @title PoSPoolmini is a small Conflux POS pool cantract with the basic usages 
 ///  @dev This is Conflux PoS pool contract, the contract only be used by the bridge
 ///  @notice bridge use this contract to participate Conflux PoS.
-///
 contract PoSPoolmini is PoolContext, Ownable, Initializable {
   using SafeMath for uint256;
   using EnumerableSet for EnumerableSet.AddressSet;
@@ -31,9 +29,9 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   // wheter this poolContract registed in PoS
   bool public _poolRegisted;
 
-  address bridge_contract;
-  address bridge_withdraw;
-  address bridge_storage;
+  address private bridge_contract;
+  address private bridge_withdraw;
+  address private bridge_storage;
 
   // lock period: 14 days + 1 day + 25520
   uint256 public _poolLockPeriod_in;//= ONE_DAY_BLOCK_COUNT * 14; 
@@ -49,7 +47,6 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   /// @custom:field unlocked votes
   /// @custom:field unclaimedInterests,total interest of whole pools
   /// @custom:field claimedInterest
-
   struct PoolSummary {
     uint256 totalvotes;
     uint256 locking;
@@ -60,6 +57,10 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     uint256 claimedInterest;
   }
 
+  /// @title PoolShot
+  /// @custom:field available votes in use
+  /// @custom:field balance
+  /// @custom:field blockNumber
   struct PoolShot {
     uint256 available;
     uint256 balance;
@@ -88,26 +89,17 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   // ======================== Events ==============================
 
   event IncreasePoSStake(address indexed user, uint256 votePower);
-
   event DecreasePoSStake(address indexed user, uint256 votePower);
-
   event WithdrawStake(address indexed user, uint256 votePower);
-
   event ClaimInterest(address indexed user, uint256 amount);
-
   event Setbridges(address indexed user, address bridgeaddr, address withdrawaddr, address storageAddr);
-
   event SetLockPeriod(address indexed user, uint256 inPeriod,uint256 outPeriod);
-
   event SetPoolName(address indexed user, string name);
-
   event SetCfxCountOfOneVote(address indexed user, uint256 count);
-
   event ReStake(address indexed user, uint64 votePower);
-
   event ClaimAllInterest(address indexed user, uint256 claimableInterest);
   // ======================== Init methods =========================
-  // call this method when depoly the 1967 proxy contract
+  /// @notice call this method when depoly the 1967 proxy contract
   function initialize() public initializer {
     CFX_COUNT_OF_ONE_VOTE = 1000;
     CFX_VALUE_OF_ONE_VOTE = 1000 ether;
@@ -117,7 +109,6 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     poolName = "Nucleon Conflux Pos Pool 01";
   }
   
-  ///
   /// @notice Regist the pool contract in PoS internal contract 
   /// @dev Only admin can do this
   /// @param indentifier The identifier of PoS node
@@ -125,7 +116,6 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
   /// @param blsPubKey The bls public key of PoS node
   /// @param vrfPubKey The vrf public key of PoS node
   /// @param blsPubKeyProof The bls public key proof of PoS node
-  ///
   function register(
     bytes32 indentifier,
     uint64 votePower,
@@ -147,10 +137,8 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
 
   // ======================== Contract methods , Only bridge can use =========================
 
-  ///
   /// @notice Increase PoS vote power
   /// @param votePower The number of vote power to increase
-  ///
   function increaseStake(uint64 votePower) public virtual payable onlyRegisted onlybridge{
     require(votePower > 0, "Minimal votePower is 1");
     require(msg.value == votePower * CFX_VALUE_OF_ONE_VOTE, "msg.value should be votePower * 1000 ether");
@@ -167,10 +155,8 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     emit IncreasePoSStake(msg.sender, votePower);
   }
 
-  ///
   /// @notice Decrease PoS vote power
   /// @param votePower The number of vote power to decrease
-  ///
   function decreaseStake(uint64 votePower) public virtual onlyRegisted onlybridge{
     uint256 tempvotes;
     collectStateFinishedVotes();
@@ -193,10 +179,8 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     emit DecreasePoSStake(msg.sender, votePower);
   }
 
-  ///
   /// @notice Withdraw PoS vote power
   /// @dev  The number of vote power to withdraw
-  ///
   function withdrawStake() public onlyRegisted onlybridge{
     collectStateFinishedVotes();
     uint256 temp_unlocked = _poolSummary.unlocked;
@@ -209,9 +193,8 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     emit WithdrawStake(msg.sender, temp_unlocked);
   }
 
-  ///
   /// @notice Claim all interest in pool
-  ///
+  /// @return claimableInterest
   function claimAllInterest() public onlyRegisted onlybridge returns (uint256){
     collectStateFinishedVotes();
     uint claimableInterest = _selfBalance();
@@ -224,9 +207,13 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     return claimableInterest;
   }
 
+  /// @notice Decrease PoS vote power
+  /// @return Balance of the pool
   function temp_Interest() public view returns (uint256){
     return _selfBalance() ;
   }
+
+  /// @notice Collect state finished votes by another contract
   function collectStateFinishedVotes() public {
     _poolSummary.locked += Inqueues.collectEndedVotes();
     uint256 tempvotes = Outqueues.collectEndedVotes()+OutqueuesFast.collectEndedVotes();
@@ -234,60 +221,62 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     _poolSummary.unlocked += tempvotes;
   }
   // ======================== Contract view methods interface use =========================
-  /// 
   /// @notice Get  pool summary
   /// @return pool's summary
-  ///
   function poolSummary() public view returns (PoolSummary memory) {
     PoolSummary memory summary = _poolSummary;
     summary.unclaimedInterests = _selfBalance();
     return summary;
   }
-
+  /// @notice Get  pool's Inqueues
+  /// @return Inqueues.queueItems()
   function getInQueue() public view returns (VotePowerQueue.QueueNode[] memory) {
     return Inqueues.queueItems();
   }
-
+  /// @notice  Outqueues have two mode: fast or nomal
+  /// @notice Get  pool's Outqueues in nomal mode
+  /// @return Outqueues.queueItems()
   function getOutQueue() public view returns (VotePowerQueue.QueueNode[] memory) {
     return Outqueues.queueItems();
   }
+  /// @notice  Outqueues have two mode: fast or nomal
+  /// @notice Get pool's Outqueues in fast mode
+  /// @return OutqueuesFast.queueItems()
   function getOutQueueFast() public view returns (VotePowerQueue.QueueNode[] memory) {
     return OutqueuesFast.queueItems();
   }
 
   // ======================== admin methods =====================
 
-  ///
-  /// @notice Enable admin to set the user share ratio
-  /// @dev description
-  ///
+  /// @notice Enable Owner to set the user share ratio
+  /// @dev Set three paras:bridgeaddr\withdrawaddr\storageaddr
   function _setbridges(address bridgeaddr, address withdrawaddr, address storageaddr) public onlyOwner {
+    require(bridgeaddr!=address(0x0000000000000000000000000000000000000000),'Can not be Zero adress');
+    require(withdrawaddr!=address(0x0000000000000000000000000000000000000000),'Can not be Zero adress');
+    require(storageaddr!=address(0x0000000000000000000000000000000000000000),'Can not be Zero adress');
     bridge_contract = bridgeaddr;
     bridge_withdraw = withdrawaddr;
     bridge_storage = storageaddr;
     emit Setbridges(msg.sender, bridgeaddr, withdrawaddr, storageaddr);
   }
 
-  /// 
   /// @notice Enable admin to set the lock and unlock period
-  /// @dev Only admin can do this
+  /// @dev Only Owner can do this
   /// @param inPeriod The lock period in in block number, default is seven day's block count
   /// @param outPeriod The lock period out in block number, default is seven day's block count
-  ///
   function _setLockPeriod(uint64 inPeriod,uint64 outPeriod) public onlyOwner {
     _poolLockPeriod_in = inPeriod;
     _poolLockPeriod_out = outPeriod;
     emit SetLockPeriod(msg.sender, inPeriod, outPeriod);
   }
 
-  /// 
-  /// @notice Enable admin to set the pool name
-  ///
+  /// @notice Enable Owner to set the pool name
   function _setPoolName(string memory name) public onlyOwner {
     poolName = name;
     emit SetPoolName(msg.sender, poolName);
   }
 
+  /// @notice Enable Owner to set Cfx Count Of One Vote
   /// @param count Vote cfx count, unit is cfx
   function _setCfxCountOfOneVote(uint256 count) public onlyOwner {
     CFX_COUNT_OF_ONE_VOTE = count;
@@ -295,8 +284,9 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     emit SetCfxCountOfOneVote(msg.sender, count);
   }
 
-  // Used to bring account's retired votes back to work
-  // reStake _poolSummary.available
+  /// @notice Used to bring account's retired votes back to work
+  /// @notice reStake _poolSummary.available
+  /// @param votePower Determined by the system state before the interruption
   function _reStake(uint64 votePower) public onlyOwner {
     _posRegisterIncreaseStake(votePower);
     emit ReStake(msg.sender, votePower);
