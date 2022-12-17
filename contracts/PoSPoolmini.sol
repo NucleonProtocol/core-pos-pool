@@ -291,9 +291,4 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     _posRegisterIncreaseStake(votePower);
     emit ReStake(msg.sender, votePower);
   }
-
-  // ======================== contract base methods =====================
-  fallback() external payable {}
-  receive() external payable {}
-
 }
