@@ -77,12 +77,4 @@ library VotePowerQueue {
     }
     return total;
   }
-
-  // function clear(InOutQueue storage q) internal {
-  //   for (uint256 i = q.start; i < q.end; i++) {
-  //     delete q.items[i];
-  //   }
-  //   q.start = q.end;
-  // }
-  
 }
