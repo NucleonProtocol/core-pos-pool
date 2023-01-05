@@ -244,7 +244,7 @@ contract CoreExchange is Ownable, Initializable {
     return userOutqueues[account].queueItems();
   }
 
-  function collectOutqueuesFinishedVotes() public {
+  function collectOutqueuesFinishedVotes() private {
     uint256 temp_amount = userOutqueues[msg.sender].collectEndedVotes();
     userSummaries[msg.sender].unlocked += temp_amount;
     userSummaries[msg.sender].unlocking -= temp_amount;
