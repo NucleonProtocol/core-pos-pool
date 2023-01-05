@@ -34,7 +34,7 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
   address   public bridgeeSpaceAddress;       //address of bridge in espace
   address   public ServicetreasuryAddress;    //Service treasury Address in espace
   //Core Space address
-  address   public CoreExroomAddress;         //Exchange room Address in core
+  //address   public CoreExroomAddress;         //Exchange room Address in core
   uint256   private systemCFXInterestsTemp;    //pools cfx interests in temporary
 
   uint256 private Unstakebalanceinbridge;             //Unstaked balance
