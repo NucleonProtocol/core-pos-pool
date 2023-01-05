@@ -36,22 +36,6 @@ library VotePowerQueue {
     return items;
   }
 
-  function queueItems(InOutQueue storage q, uint64 offset, uint64 limit) internal view returns (QueueNode[] memory) {
-    uint256 start = q.start + offset;
-    if (start >= q.end) {
-      return new QueueNode[](0);
-    }
-    uint end = start + limit;
-    if (end > q.end) {
-      end = q.end;
-    }
-    QueueNode[] memory items = new QueueNode[](end - start);
-    for (uint256 i = start; i < end; i++) {
-      items[i - start] = q.items[i];
-    }
-    return items;
-  }
-
   /**
   * Collect all ended vote powers from queue
   */
