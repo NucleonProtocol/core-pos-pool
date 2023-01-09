@@ -209,6 +209,7 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
   /// @return systemCFXInterestsTemp The interests need be distribute to system now
   function claimInterests() internal Only_trusted_trigers returns(uint256){
     uint256 pool_sum = poolAddress.length;
+    require(pool_sum<10,"Too Many Pools!");
     IExchange posPool;
     uint256 interest;
     uint256 allinterest;
@@ -286,6 +287,7 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
   /// @return poolLockedvotesSUM current POS pool locked votes SUM
   function handleLockedvotesSUM() internal Only_trusted_trigers  returns(uint256){
     uint256 pool_sum = poolAddress.length;
+    require(pool_sum<10,"Too Many Pools!");
     uint256 poolLockedvotesSUM;
     for(uint256 i=0;i<pool_sum;i++)
     {
@@ -308,6 +310,7 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
     uint256 sum = abi.decode(rawsum, (uint256));
     uint256 balanceinbridge = balanceinpool + address(this).balance; //crossSpaceCall.mappedBalance(bridgeeSpaceAddress)
     uint256 pool_sum = poolAddress.length;
+    require(pool_sum<10,"Too Many Pools!");
     uint256 poolvotes_sum;
     for(uint256 i=0;i<pool_sum;i++)
     {
@@ -324,6 +327,7 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
   /// @return transferValue Values transfer to Exchangeroom
   function withdrawVotes() internal Only_trusted_trigers returns(uint256,uint256){
     uint256 pool_sum = poolAddress.length;
+    require(pool_sum<10,"Too Many Pools!");
     IExchange posPool;
     uint256 temp_unlocked;
     uint256 transferValue;
