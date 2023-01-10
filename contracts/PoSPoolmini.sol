@@ -207,7 +207,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
     return claimableInterest;
   }
 
-  /// @notice Decrease PoS vote power
+  /// @notice temp Interest of user
   /// @return Balance of the pool
   function temp_Interest() public view returns (uint256){
     return _selfBalance() ;
@@ -248,7 +248,7 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
 
   // ======================== admin methods =====================
 
-  /// @notice Enable Owner to set the user share ratio
+  /// @notice Enable Owner to set the addrs used in this contract
   /// @dev Set three paras:bridgeaddr\withdrawaddr\storageaddr
   function _setbridges(address bridgeaddr, address withdrawaddr, address storageaddr) public onlyOwner {
     require(bridgeaddr!=address(0x0000000000000000000000000000000000000000),'Can not be Zero adress');
@@ -262,8 +262,8 @@ contract PoSPoolmini is PoolContext, Ownable, Initializable {
 
   /// @notice Enable admin to set the lock and unlock period
   /// @dev Only Owner can do this
-  /// @param inPeriod The lock period in in block number, default is seven day's block count
-  /// @param outPeriod The lock period out in block number, default is seven day's block count
+  /// @param inPeriod The lock period in in block number, default is 13 day's block count
+  /// @param outPeriod The lock period out in block number, default is 1 day's block count
   function _setLockPeriod(uint64 inPeriod,uint64 outPeriod) public onlyOwner {
     _poolLockPeriod_in = inPeriod;
     _poolLockPeriod_out = outPeriod;

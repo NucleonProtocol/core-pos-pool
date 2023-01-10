@@ -28,7 +28,7 @@ contract CoreExchange is Ownable, Initializable {
   address bridgeCoresideaddr;     //Core address
   address xCFXCoreAddr;           //Core address
   address storagebridge;          //espace address
-  bool started;
+  bool public started;
 
   uint256 public _poolLockPeriod_slow = ONE_DAY_BLOCK_COUNT * 15;
   uint256 public _poolLockPeriod_fast = ONE_DAY_BLOCK_COUNT * 2;

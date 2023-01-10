@@ -40,7 +40,7 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
   uint256 private Unstakebalanceinbridge;             //Unstaked balance
   uint256 private identifier;                         //compound and update order identifier
 
-  mapping(address=>bool) private trusted_node_trigers;//     
+  mapping(address=>bool) private trusted_node_triggers;//     
   // ======================== Struct definitions =========================
   struct PoolSummary {
     uint256 xCFXSUM;             // xCFX SUM (1 ether xCFX === 1 e18)
@@ -51,8 +51,8 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
 
   // ============================ Modifiers ===============================
 
-  modifier Only_trusted_trigers() {
-    require(trusted_node_trigers[msg.sender],'trigers must be trusted');
+  modifier Only_trusted_triggers() {
+    require(trusted_node_triggers[msg.sender],'triggers must be trusted');
     _;
   }
     // ======================== Events ==============================
@@ -64,7 +64,7 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
   event SeteSpacexCFXAddress(address indexed user, address eSpacexCFXaddr);
   event SeteSpacebridgeAddress(address indexed user, address bridgeeSpaceAddr);
   event SeteServicetreasuryAddress(address indexed user, address servicetreasuryAddress);
-  event Settrustedtrigers(address indexed user, address triggersAddress,bool state);
+  event Settrustedtriggers(address indexed user, address triggersAddress,bool state);
   event SetCfxCountOfOneVote(address indexed user, uint256 count);
   event SetPoolUserShareRatio(address indexed user, uint256 ratio);
   event ClearTheStates(address indexed user, uint256 idclear);
@@ -150,14 +150,14 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
     ServicetreasuryAddress = servicetreasury;
     emit SeteServicetreasuryAddress(msg.sender, servicetreasury);
   }
-  /// @notice Set trustedtrigers Address
+  /// @notice Set trustedtriggers Address
   /// @notice Only used by Owner
   /// @param triggersAddress The address of Service treasury contract, nomal address 
   /// @param state True or False
-  function _settrustedtrigers(address triggersAddress,bool state) public onlyOwner {
+  function _settrustedtriggers(address triggersAddress,bool state) public onlyOwner {
     require(triggersAddress!=address(0x0000000000000000000000000000000000000000),'Can not be Zero adress');
-    trusted_node_trigers[triggersAddress] = state;
-    emit Settrustedtrigers(msg.sender, triggersAddress, state);
+    trusted_node_triggers[triggersAddress] = state;
+    emit Settrustedtriggers(msg.sender, triggersAddress, state);
   }
   /// @notice Set Cfx Count Of One Vote
   /// @notice Only used by Owner
@@ -175,10 +175,10 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
     poolUserShareRatio = ratio;
     emit SetPoolUserShareRatio(msg.sender, ratio);
   }
-  /// @notice Get triger state
-  /// @param _Address the triger address to be query
-  function gettrigerstate(address _Address) public view returns(bool){
-    return trusted_node_trigers[_Address];
+  /// @notice Get trigger state
+  /// @param _Address the trigger address to be query
+  function gettriggerstate(address _Address) public view returns(bool){
+    return trusted_node_triggers[_Address];
   }
   /// @notice Get Pool Address array
   function getPoolAddress() public view returns (address[] memory ) {
@@ -192,12 +192,12 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
   }
 
   //---------------------bridge method-------------------------------------
-  /// @notice syncALLwork is triggered regularly by triger
-  /// @notice Only used by trusted triger
+  /// @notice syncALLwork is triggered regularly by trigger
+  /// @notice Only used by trusted trigger
   /// @return infos all needed infos, uint256[11]
-  function syncALLwork() public Only_trusted_trigers returns(uint256[11] memory infos){
+  function syncALLwork() public Only_trusted_triggers returns(uint256[11] memory infos){
     infos[0] = claimInterests();
-    (infos[1],infos[2]) = campounds();
+    (infos[1],infos[2]) = compounds();
     (infos[3],infos[4]) = handleUnstake();
     infos[5] = handleLockedvotesSUM();
     (infos[6],infos[7],infos[8]) = SyncValue();
@@ -205,9 +205,9 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
     return infos;
   }
   /// @notice Used to claim POS pool interests
-  /// @notice Only used by trusted triger
+  /// @notice Only used by trusted trigger
   /// @return systemCFXInterestsTemp The interests need be distribute to system now
-  function claimInterests() internal Only_trusted_trigers returns(uint256){
+  function claimInterests() internal Only_trusted_triggers returns(uint256){
     uint256 pool_sum = poolAddress.length;
     require(pool_sum<10,"Too Many Pools!");
     IExchange posPool;
@@ -224,11 +224,11 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
     systemCFXInterestsTemp += allinterest.mul(RATIO_BASE-poolUserShareRatio).div(RATIO_BASE);
     return systemCFXInterestsTemp;
   }
-  /// @notice Used to campounds and get the platform interests
-  /// @notice Only used by trusted triger
+  /// @notice Used to compounds and get the platform interests
+  /// @notice Only used by trusted trigger
   /// @return xCFXminted all of the xCFX minted this time
   /// @return votePower all of the votePower added this time
-  function campounds() internal Only_trusted_trigers  returns(uint256,uint256){
+  function compounds() internal Only_trusted_triggers  returns(uint256,uint256){
     require(identifier==0,"identifier is not right, need be 0");
     identifier=1;
 
@@ -253,10 +253,10 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
     return (xCFXminted, votePower);
   }
   /// @notice Used to handle Unstake CFXs
-  /// @notice Only used by trusted triger
+  /// @notice Only used by trusted trigger
   /// @return available poolSummary.totalvotes
   /// @return Unstakebalanceinbridge a para to balance unstake votes and CFXs
-  function handleUnstake() internal Only_trusted_trigers nonReentrant returns(uint256,uint256){
+  function handleUnstake() internal Only_trusted_triggers nonReentrant returns(uint256,uint256){
     require(identifier==1,"identifier is not right, need be 1");
     identifier=2;
 
@@ -283,9 +283,9 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
     return (available,Unstakebalanceinbridge);
   }
   /// @notice Used to handle Locked votes SUM
-  /// @notice Only used by trusted triger
+  /// @notice Only used by trusted trigger
   /// @return poolLockedvotesSUM current POS pool locked votes SUM
-  function handleLockedvotesSUM() internal Only_trusted_trigers  returns(uint256){
+  function handleLockedvotesSUM() internal Only_trusted_triggers  returns(uint256){
     uint256 pool_sum = poolAddress.length;
     require(pool_sum<10,"Too Many Pools!");
     uint256 poolLockedvotesSUM;
@@ -297,11 +297,11 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
     return poolLockedvotesSUM;
   }
   /// @notice Used to Sync xCFX Value
-  /// @notice Only used by trusted triger
+  /// @notice Only used by trusted trigger
   /// @return balanceinbridge balance in this bridge
   /// @return poolvotes_sum pool votes sum
   /// @return xCFXvalues New xCFX values
-  function SyncValue() internal Only_trusted_trigers returns(uint256,uint256,uint256){
+  function SyncValue() internal Only_trusted_triggers returns(uint256,uint256,uint256){
     require(identifier==2,"identifier is not right, need be 2");
     identifier=0;
     bytes memory rawbalance = crossSpaceCall.callEVM(bytes20(eSpaceExroomAddress), abi.encodeWithSignature("espacebalanceof(address)", bridgeeSpaceAddress));
@@ -322,10 +322,10 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
     return (balanceinbridge,poolvotes_sum,xCFXvalues);
   }
   /// @notice Used to withdraw Votes to eSpace Exchangeroom, Convenient for users to extract
-  /// @notice Only used by trusted triger
+  /// @notice Only used by trusted trigger
   /// @return temp_unlocked temp_unlocked in POS pool
   /// @return transferValue Values transfer to Exchangeroom
-  function withdrawVotes() internal Only_trusted_trigers returns(uint256,uint256){
+  function withdrawVotes() internal Only_trusted_triggers returns(uint256,uint256){
     uint256 pool_sum = poolAddress.length;
     require(pool_sum<10,"Too Many Pools!");
     IExchange posPool;
