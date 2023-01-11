@@ -70,7 +70,7 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
   event ClearTheStates(address indexed user, uint256 idclear);
 
   // ================== Methods for core pos pools settings ===============
-  /// @notice Call this method when depoly the 1967 proxy contract
+  /// @notice Call this method when deploy the 1967 proxy contract
   function initialize(address crossSpaceCallAddress) public initializer{
     crossSpaceCall = CrossSpaceCall(crossSpaceCallAddress);
     poolUserShareRatio = 9000;
