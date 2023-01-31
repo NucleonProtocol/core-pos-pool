@@ -28,4 +28,5 @@ interface IExchange {
   function temp_Interest() external view returns (uint256);
   function claimAllInterest() external returns (uint256);
   function setxCFXValue(uint256 _cfxvalue) external  returns (uint256);
+  function collectStateFinishedVotes() external;
 }

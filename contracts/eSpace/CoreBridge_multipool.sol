@@ -334,6 +334,7 @@ contract CoreBridge_multipool is Ownable, Initializable, ReentrancyGuard {
     for(uint256 i=0;i<pool_sum;i++)
     {
       posPool = IExchange(poolAddress[i]);
+      posPool.collectStateFinishedVotes();
       IExchange.PoolSummary memory poolSummary = posPool.poolSummary();
       temp_unlocked = poolSummary.unlocked;
       if (temp_unlocked > 0) 
